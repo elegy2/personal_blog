@@ -1,15 +1,169 @@
 ---
----
+import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Greeting from '../components/Greeting';
+import Sakura from '../components/Sakura.jsx'
 
-<html lang="zh-cn">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type ="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content = {Astro.generator} >
-    <title>Astro</title>
-  </head>
-  <body>
-    <h1>我的 Astro 站点</h1>
-  </body>
-</html>
+// 导入 Markdown 文档
+const allPosts = import.meta.glob('../pages/posts/*.md', { eager: true });
+const posts = Object.values(allPosts)
+  .map(post => post.frontmatter)
+  .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+const pageTitle = "elegy博客 ✨";
+---
+<BaseLayout pageTitle={pageTitle}>
+  <Greeting client:load messages={["Chiallo", "Hallo", "你好", "こんにちは","Здравствыйте","안녕하세요"]} />
+
+  <!-- 博客简介 -->
+  <section class="fade-in" style="animation-delay: 0.2s;">
+    <p>
+      该博客主要分享 <strong>计算机专业相关内容</strong>，包括：
+    </p>
+    <ul class="highlight-list">
+      <li>🏆 竞赛项目经验</li>
+      <li>💼 实习经历</li>
+      <li>🎓 保研与留学相关经验</li>
+      <li>📚 课程学习心得与学习技巧</li>
+      <li>🎯 大学常见的一些注意事项</li>
+    </ul>
+
+    <p>如果觉得有用，希望能 follow 我的 <strong>GitHub</strong>，真的很重要！拜托了 orz</p>
+
+    <p>
+      另外，博客设有 <strong>树洞环节</strong>，同学们可自由投稿或提问。
+      投稿/提问请联系：
+      <a href="mailto:3393205446@qq.com" class="highlight-contact">3393205446@qq.com</a>
+    </p>
+  </section>
+
+  <!-- 最新文章自动滚动列表 -->
+  <section class="blog-section latest-posts fade-in" style="animation-delay: 0.2s;">
+    <h3>📰 最新文章</h3>
+    <div class="scroll-wrapper">
+      <div class="scroll-content">
+        {posts.map(post => (
+          <div class="scroll-item">
+            <span class="bullet">⭐</span>
+            <a href={post.url}>{post.title}</a>
+          </div>
+        ))}
+        {/* 复制一份，实现无限循环 */}
+        {posts.map(post => (
+          <div class="scroll-item">
+            <span class="bullet">⭐</span>
+            <a href={post.url}>{post.title}</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Sakura client:only="preact" count={30} />
+
+  <!-- 首页页面专用样式 -->
+  <style>
+    /* 半透明动态背景 */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url('/photos/index_bg.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.6;
+      z-index: -1;
+      filter: blur(2px);
+      transform: scale(1.02);
+    }
+
+    /* 发光标题 */
+    .glow-title {
+      color: #000;
+      text-shadow: 0 0 10px #69c3ffff, 0 0 20px #ff1493, 0 0 30px #ff69b4;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* 博客简介列表样式 */
+    .highlight-list li {
+      margin-bottom: 0.6em;
+      position: relative;
+      padding-left: 1.5em;
+      color: #333;
+      font-weight: 500;
+    }
+    .highlight-list li::before {
+      content: "✨";
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    /* 段落与列表基础样式 */
+    p { line-height: 1.7; margin-bottom: 1em; }
+    ul { padding-left: 1.5em; margin-bottom: 1em; }
+    li { margin-bottom: 0.5em; }
+
+    /* 联系方式高亮 */
+    .highlight-contact {
+      color: #ff69b4;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    /* 最新文章滚动容器 */
+    .latest-posts {
+      margin: 2rem 0;
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
+      background: transparent; /* 完全透明 */
+      padding: 0.1rem 0;
+    }
+    .latest-posts .scroll-wrapper {
+      overflow: hidden;
+      width: 100%;
+    }
+    .latest-posts .scroll-content {
+      display: flex;
+      gap: 2rem;
+      white-space: nowrap;
+      animation: scroll-left 20s linear infinite;
+    }
+    .latest-posts .scroll-item {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+    .latest-posts .bullet {
+      display: inline-block;
+      margin-right: 0.5rem;
+      animation: bounce 1.5s infinite;
+    }
+
+    /* 小图标跳动动画 */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* 跑马灯横向滚动动画 */
+    @keyframes scroll-left {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* 文章链接样式 */
+    .latest-posts a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+    .latest-posts a:hover {
+      text-decoration: underline;
+      color: #ff69b4;
+    }
+  </style>
+</BaseLayout>

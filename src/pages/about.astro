@@ -1,0 +1,157 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Sakura from '../components/Sakura.jsx';
+
+const pageTitle = "关于我们团队";
+const heart_title = "开发网站的初衷"
+const section_title = "网站内容"
+
+
+// 团队成员数据
+const team = [
+  {
+    name: "Elegy(一粒鸡)",
+    avatar: "/photos/elegy_avatar.jpg", // 左上角头像
+    country: "中国",
+    occupation: "学生",
+    school:"伟大的南方平凡学校SCNU🌸🦁",
+    hobbies: ["CS2大炒面先生", "APEX职业猎杀哥（自称）", "米哈游全家桶传教者","古董级月球人","长期素食爱好者"],
+    skills: [
+      "语言：CET-4/6、雅思 6.5，轻松读写英文技术文档",
+      "数据分析：SPSS、Python、Matlab、PowerBi",
+      "大数据：Hive/Hadoop/SQL，处理海量数据不在话下",
+      "前端：Astro、Vue.js 和数据可视化达人",
+      "后端：Django 全栈部署小能手",
+      "编程：熟悉Python，略懂 C++/Java",
+      "版本控制：Git",
+      "技术管理：带队经验丰富，擅长项目架构与技术选型"
+    ],
+    description: "你所热爱的就是你的生活",
+    awards: ["2025 百度之星程序设计大赛银奖", "2025 美国大学生数学建模M奖","2024 全国大学生数学建模国家级二等奖","2024 粤港澳金融数学建模三等奖"],
+    contributions: "网站提出和设计者，项目主要负责人。"
+  },
+  {
+    name: "小明",
+    avatar: "/photos/xiaoming.png",
+    country: "中国",
+    occupation: "前端工程师",
+    hobbies: ["打篮球", "阅读", "编程"],
+    skills: ["HTML", "CSS", "JavaScript", "Vue", "Node.js"]
+  }
+];
+---
+
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{pageTitle}</title>
+
+    <style>
+      h1 { color: purple; font-size: 3rem; margin-bottom: 1rem; }
+      h2 { font-size: 2rem; margin-bottom: 1rem; }
+      p { line-height: 1.6; margin-bottom: 1em; }
+
+      /* 团队卡片容器 */
+      .team-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          justify-content: flex-start;
+        }
+
+      .team-card {
+          display: flex;
+          width: 100%;        /* 宽度随父容器变化 */
+          max-width: none;    /* 取消最大宽度限制 */
+          background-color: #f8f8f8;
+          border-radius: 0.5rem;
+          padding: 1rem;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+          gap: 1rem;
+          min-height: 180px;
+      }
+
+      /* 头像区域 */
+      .team-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      /* 成员信息 */
+      .team-info {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+      }
+
+      .team-info h3 { margin: 0 0 0.5rem 0; }
+      .team-info p { margin: 0.2rem 0; }
+      .team-info ul { padding-left: 1.2rem; margin: 0.2rem 0; }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+    <!-- 网站初衷 -->
+    <section class="fade-in" style="animation-delay: 0.2s;">
+      <h2>{heart_title}</h2>
+      <p>
+        开发这个网站的目的主要有三个方面：
+      </p>
+      <p>
+        <strong>第一，个人层面。</strong> 找工作需要一个能写进简历的个人博客项目 :D，所以就想着边学前端框架，边动手搭建一个网站，结果一不小心就把它“养”大了。
+      </p>
+      <p>
+        <strong>第二，分享层面。</strong> 上大学时找学习资料特别麻烦，尤其我是中外合办项目的学生，资源搜索起来更困难。社交媒体上的攻略看似很多，但多数夹带广告，不太靠谱。于是我干脆自己做个开源网站，把经验和资源整理出来，既能分享心得，也能帮学弟学妹们少走弯路。
+      </p>
+      <p>
+        <strong>第三，团队层面。</strong> 以前主要是带队参加竞赛，但真正做团队开发项目的经历不多。所以这次就想着拉上同学一起开发网站，大家互相帮衬一下（boy help boy），不仅能积累经验，还能在简历上多添一笔。
+      </p>
+    </section>
+
+    <!-- 网站内容 -->
+    <section class="fade-in" style="animation-delay: 0.4s;">
+      <h2>{section_title}</h2>
+      <p>（这里写网站主要展示什么内容，比如团队介绍、项目成果、学习资源等等。）</p>
+    </section>
+
+    <h2 class="fade-in" style="animation-delay: 0.6s;">{pageTitle}</h2>
+
+    <div class="team-container">
+      {team.map((member, index) => (
+        <div class="team-card fade-in" style={`animation-delay: ${0.8 + index * 0.2}s;`}>
+          <img class="team-avatar" src={member.avatar} alt={member.name} />
+          <div class="team-info">
+            <h3>{member.name}</h3>
+            <p>国家: {member.country}</p>
+            <p>职业: {member.occupation}</p>
+            <p>学校: {member.school}</p>
+            <p>爱好: {member.hobbies.join('，')}</p>
+            <p>技能:</p>
+            <ul>
+              {member.skills.map(skill => <li>{skill}</li>)}
+            </ul>
+            {member.description && <p><strong>简介:</strong> {member.description}</p>}
+            {member.awards && member.awards.length > 0 && (
+              <div>
+                <strong>获奖经历:</strong>
+                <ul>
+                  {member.awards.map(award => <li>{award}</li>)}
+                </ul>
+              </div>
+            )}
+            {member.contributions && <p><strong>主要贡献:</strong> {member.contributions}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <Sakura client:only="preact" count={30} />
+    <Footer />
+  </body>
+</html>
