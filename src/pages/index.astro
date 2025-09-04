@@ -1,65 +1,93 @@
 ---
-import '../styles/global.css';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Greeting from '../components/Greeting';
-import Sakura from '../components/Sakura.jsx'
+import "../styles/global.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Greeting from "../components/Greeting";
+import Sakura from "../components/Sakura.jsx";
 
 // 导入 Markdown 文档
-const allPosts = import.meta.glob('../pages/posts/*.md', { eager: true });
+const allPosts = import.meta.glob("../pages/posts/*.md", { eager: true });
 const posts = Object.values(allPosts)
-  .map(post => post.frontmatter)
+  .map((post) => post.frontmatter)
   .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-const pageTitle = "elegy博客 ✨";
+const pageTitle = "Elegy の Blog";
 ---
+
 <BaseLayout pageTitle={pageTitle}>
-  <Greeting client:load messages={["Chiallo", "Hallo", "你好", "こんにちは","Здравствыйте","안녕하세요"]} />
-
-  <!-- 博客简介 -->
-  <section class="fade-in" style="animation-delay: 0.2s;">
-    <p>
-      该博客主要分享 <strong>计算机专业相关内容</strong>，包括：
-    </p>
-    <ul class="highlight-list">
-      <li>🏆 竞赛项目经验</li>
-      <li>💼 实习经历</li>
-      <li>🎓 保研与留学相关经验</li>
-      <li>📚 课程学习心得与学习技巧</li>
-      <li>🎯 大学常见的一些注意事项</li>
-    </ul>
-
-    <p>如果觉得有用，希望能 follow 我的 <strong>GitHub</strong>，真的很重要！拜托了 orz</p>
-
-    <p>
-      另外，博客设有 <strong>树洞环节</strong>，同学们可自由投稿或提问。
-      投稿/提问请联系：
-      <a href="mailto:3393205446@qq.com" class="highlight-contact">3393205446@qq.com</a>
-    </p>
-  </section>
-
-  <!-- 最新文章自动滚动列表 -->
-  <section class="blog-section latest-posts fade-in" style="animation-delay: 0.2s;">
-    <h3>📰 最新文章</h3>
-    <div class="scroll-wrapper">
-      <div class="scroll-content">
-        {posts.map(post => (
-          <div class="scroll-item">
-            <span class="bullet">⭐</span>
-            <a href={post.url}>{post.title}</a>
-          </div>
-        ))}
-        {/* 复制一份，实现无限循环 */}
-        {posts.map(post => (
-          <div class="scroll-item">
-            <span class="bullet">⭐</span>
-            <a href={post.url}>{post.title}</a>
-          </div>
-        ))}
+  <!-- 欢迎页面 -->
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-content">
+      <h1 class="welcome-title">Welcome to Elegy</h1>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
       </div>
     </div>
-  </section>
+    <button class="skip-btn" id="skipBtn">跳过 &raquo;</button>
+  </div>
 
-  <Sakura client:only="preact" count={30} />
+  <!-- 博客内容 -->
+  <div class="main-content" id="mainContent" style="opacity: 0; display: none;">
+    <!-- 问候语 -->
+    <Greeting
+      client:load
+      messages={[
+        "Chiallo",
+        "Hallo",
+        "你好",
+        "こんにちは",
+        "Здравствыйте",
+        "안녕하세요",
+      ]}
+    />
+
+    <!-- 博客简介 -->
+    <section class="fade-in" style="animation-delay: 0.2s;">
+      <p>该博客主要分享 <strong>计算机专业相关内容</strong>，包括：</p>
+      <ul class="highlight-list">
+        <li>🏆 竞赛项目经验</li>
+        <li>💼 实习经历</li>
+        <li>🎓 保研与留学相关经验</li>
+        <li>📚 课程学习心得与学习技巧</li>
+        <li>🎯 大学常见的一些注意事项</li>
+      </ul>
+      <p>
+        如果觉得有用，希望能 follow 我的 <strong>GitHub</strong
+        >，真的很重要！拜托了 orz
+      </p>
+      <p>
+        另外，博客设有 <strong>树洞环节</strong
+        >，同学们可自由投稿或提问。投稿/提问请联系：
+        <a href="mailto:3393205446@qq.com" class="highlight-contact"
+          >3393205446@qq.com</a
+        >
+      </p>
+    </section>
+
+    <!-- 最新文章自动滚动列表 -->
+    <section
+      class="blog-section latest-posts fade-in"
+      style="animation-delay: 0.2s;"
+    >
+      <h3>📰 最新文章</h3>
+      <div class="scroll-wrapper">
+        <div class="scroll-content" id="scrollContent">
+          {/* 文章列表渲染部分 */}
+          {
+            posts.map((post) => (
+              <div class="scroll-item" key={post.url}>
+                <span class="bullet">⭐</span>
+                <a href={post.url} target="_blank">
+                  {post.title}
+                </a>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <Sakura client:only="preact" count={30} />
+  </div>
 
   <!-- 首页页面专用样式 -->
   <style>
@@ -67,9 +95,11 @@ const pageTitle = "elegy博客 ✨";
     body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-image: url('/photos/index_bg.jpg');
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("/photos/index_bg.jpg");
       background-size: cover;
       background-position: center;
       opacity: 0.6;
@@ -78,39 +108,75 @@ const pageTitle = "elegy博客 ✨";
       transform: scale(1.02);
     }
 
-    /* 发光标题 */
-    .glow-title {
-      color: #000;
-      text-shadow: 0 0 10px #69c3ffff, 0 0 20px #ff1493, 0 0 30px #ff69b4;
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-
-    /* 博客简介列表样式 */
-    .highlight-list li {
-      margin-bottom: 0.6em;
-      position: relative;
-      padding-left: 1.5em;
-      color: #333;
-      font-weight: 500;
-    }
-    .highlight-list li::before {
-      content: "✨";
-      position: absolute;
-      left: 0;
+    /* 欢迎页样式 */
+    .splash-screen {
+      position: fixed;
       top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 1s ease-out;
     }
 
-    /* 段落与列表基础样式 */
-    p { line-height: 1.7; margin-bottom: 1em; }
-    ul { padding-left: 1.5em; margin-bottom: 1em; }
-    li { margin-bottom: 0.5em; }
+    .splash-content {
+      text-align: center;
+      color: white;
+    }
 
-    /* 联系方式高亮 */
-    .highlight-contact {
-      color: #ff69b4;
-      font-weight: bold;
-      text-decoration: underline;
+    .welcome-title {
+      font-size: 3.5rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1s forwards 0.5s;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .progress-container {
+      width: 300px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: white;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .skip-btn {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .skip-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* 最新文章滚动容器 */
@@ -118,7 +184,7 @@ const pageTitle = "elegy博客 ✨";
       margin: 2rem 0;
       border-top: 1px solid transparent;
       border-bottom: 1px solid transparent;
-      background: transparent; /* 完全透明 */
+      background: transparent;
       padding: 0.1rem 0;
     }
     .latest-posts .scroll-wrapper {
@@ -143,16 +209,23 @@ const pageTitle = "elegy博客 ✨";
       animation: bounce 1.5s infinite;
     }
 
-    /* 小图标跳动动画 */
     @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
     }
 
-    /* 跑马灯横向滚动动画 */
     @keyframes scroll-left {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
     }
 
     /* 文章链接样式 */
@@ -166,4 +239,53 @@ const pageTitle = "elegy博客 ✨";
       color: #ff69b4;
     }
   </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const splashScreen = document.getElementById("splashScreen");
+      const mainContent = document.getElementById("mainContent");
+      const progressBar = document.getElementById("progressBar");
+      const skipBtn = document.getElementById("skipBtn");
+      let progress = 0;
+
+      // 进度条动画
+      const progressInterval = setInterval(() => {
+        progress += 8;
+        progressBar.style.width = progress + "%";
+
+        if (progress >= 100) {
+          clearInterval(progressInterval);
+          enterSite();
+        }
+      }, 50);
+
+      // 跳过按钮点击事件
+      skipBtn.addEventListener("click", () => {
+        clearInterval(progressInterval);
+        enterSite();
+      });
+
+      // 点击页面其他地方跳过
+      document.body.addEventListener("click", () => {
+        clearInterval(progressInterval);
+        enterSite();
+      });
+
+      // 进入网站内容
+      function enterSite() {
+        // 淡出欢迎页面
+        splashScreen.style.opacity = "0";
+        // 显示主要内容
+        setTimeout(() => {
+          splashScreen.style.display = "none";
+          mainContent.style.display = "block";
+
+          // 淡入主要内容
+          setTimeout(() => {
+            mainContent.style.opacity = "1";
+          }, 50);
+        }, 1000);
+      }
+    });
+  </script>
 </BaseLayout>

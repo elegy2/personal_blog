@@ -11,15 +11,13 @@
   "dependencies": {
     "@astrojs/preact": "^4.1.0",
     "@astrojs/rss": "^4.0.12",
-<<<<<<< HEAD
-=======
     "astro": "^5.13.3",
     "pixi-live2d-display": "^0.4.0",
     "pixi.js": "^6.5.10",
->>>>>>> 5bac00a61e72e3bef9bdb45e60ec3cddb8954465
     "preact": "^10.27.1"
   },
   "devDependencies": {
     "astro": "^5.13.5"
+    
   }
 }
