@@ -1,6 +1,19 @@
+/* 🌞 亮色模式（默认） */
 html {
-  background-color: #e3e6e9;
+  background: url("/photos/bright_bg.jpg") no-repeat center center fixed;
+  background-size: cover; /* 背景图铺满屏幕 */
   font-family: sans-serif;
+  color: #000; /* 亮色下文字为黑色 */
+  position: relative;
+}
+
+/* 白天模式半透明遮罩 */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6); /* 白色半透明层 */
+  z-index: -1; /* 保证在所有内容之下 */
 }
 
 body {
@@ -86,8 +99,31 @@ h1 {
 
 /* 主题切换图标样式 */
 html.dark {
-  background-color: #0d0950;
+  background: url("/photos/dark_bg.jpg") no-repeat center center fixed;
+  background-size: cover;
   color: #fff;
+  position: relative;
+}
+
+/* 半透明遮罩层 */
+html.dark::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 9, 80, 0.6); /* 深蓝紫色半透明层，0.6 可调 */
+  z-index: -1; /* 确保在内容后面 */
+}
+
+html.dark .team-card {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+html.dark .team-info p,
+html.dark .team-info li {
+  color: #ccc;
 }
 
 .dark .nav-links a {
