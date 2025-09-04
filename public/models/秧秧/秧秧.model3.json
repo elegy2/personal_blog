@@ -1,0 +1,25 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "秧秧.moc3",
+		"Textures": [
+			"秧秧.4096/texture_00.png",
+			"秧秧.4096/texture_01.png",
+			"秧秧.4096/texture_02.png"
+		],
+		"Physics": "秧秧.physics3.json",
+		"DisplayInfo": "秧秧.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		}
+	]
+}
