@@ -7,3 +7,72 @@
   <a href="/tags/">标签</a>
   <a href="/show/">展示</a>
 </div>
+
+<style>
+  .nav-links {
+    display: flex;
+    justify-content: flex-end; /* 靠右 */
+    gap: 2rem;
+    padding: 1rem 2rem; /* 右边留点内边距 */
+  }
+
+  .nav-links a {
+    position: relative;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #000000;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+
+  /* hover 文字颜色 + 背景 */
+  .nav-links a:hover {
+    color: #5c7cfa;
+    background: rgba(92, 124, 250, 0.12); /* 浅蓝透明背景 */
+  }
+
+  /* 下划线动画 */
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 2px;
+    background-color: #5c7cfa;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+
+  .nav-links a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* 深色模式下字体白色 */
+  html.dark .nav-links a {
+    color: #ffffff;
+  }
+
+  /* 箭头标识 */
+  .nav-links a::before {
+    content: "➤";
+    position: absolute;
+    right: -1.2rem;
+    opacity: 0;
+    color: #5c7cfa;
+    font-size: 0.85rem;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+    transform: translateX(-5px);
+  }
+
+  .nav-links a:hover::before {
+    opacity: 1;
+    transform: translateX(0);
+  }
+</style>

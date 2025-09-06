@@ -146,3 +146,152 @@ html.dark .team-info li {
   opacity: 0;
   animation: fadeInUp 0.8s ease forwards;
 }
+/* 🌞 亮色模式（默认） */
+html {
+  background: url("/photos/bright_bg.jpg") no-repeat center center fixed;
+  background-size: cover; /* 背景图铺满屏幕 */
+  font-family: sans-serif;
+  color: #000; /* 亮色下文字为黑色 */
+  position: relative;
+}
+
+/* 白天模式半透明遮罩 */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6); /* 白色半透明层 */
+  z-index: -1; /* 保证在所有内容之下 */
+}
+
+body {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 150ch;
+  padding: 1rem;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1 {
+  margin: 1rem 0;
+  font-size: 2.5rem;
+}
+
+/* 导航样式 */
+.hamburger {
+  padding-right: 20px;
+  cursor: pointer;
+}
+
+.hamburger .line {
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin-bottom: 10px;
+  background-color: #ff9776;
+}
+
+
+.nav-links {
+  width: 100%;
+  top: 5rem;
+  left: 48px;
+  background-color: #ff9776;
+  display: none;
+  margin: 0;
+}
+
+.nav-links a {
+  display: block;
+  text-align: center;
+  padding: 10px 0;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+  background-color: #ff9776;
+}
+
+.expanded {
+  display: unset;
+}
+
+
+/* 大屏幕导航样式 */
+@media screen and (min-width: 636px) {
+  .nav-links {
+    margin-left: 5em;
+    display: block;
+    position: static;
+    width: auto;
+    background: none;
+  }
+
+  .nav-links a {
+    display: inline-block;
+    padding: 15px 20px;
+  }
+
+  .hamburger {
+    display: none;
+  }
+
+}
+
+/* 主题切换图标样式 */
+html.dark {
+  background: url("/photos/dark_bg.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  position: relative;
+}
+
+/* 半透明遮罩层 */
+html.dark::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 9, 80, 0.6); /* 深蓝紫色半透明层，0.6 可调 */
+  z-index: -1; /* 确保在内容后面 */
+}
+
+html.dark .team-card {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+html.dark .team-info p,
+html.dark .team-info li {
+  color: #ccc;
+}
+
+.dark .nav-links a {
+  color: #fff;
+}
+
+/*动态呈现*/
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease forwards;
+}
