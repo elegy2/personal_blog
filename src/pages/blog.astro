@@ -1,0 +1,217 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BlogPost from "../components/BlogPost.astro";
+import Live2D from '../components/Live2D.jsx';
+const allPosts = Object.values(
+  import.meta.glob("./posts/*.md", { eager: true }),
+);
+const pageTitle = "Ars Scientia";
+
+// 最新 5 篇
+const latestPosts = allPosts.slice(0, 5);
+// 日期格式化函数：yyyy-mm-dd -> yyyy年m月d日
+function formatDate(dateStr: string) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1; // 月份从 0 开始
+  const day = d.getDate();
+  return `${year}年${month}月${day}日`;
+}
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <Live2D client:only="preact" />
+  <section class="blog-container">
+    <!-- 左边：文章卡片列表 -->
+    <div class="left-panel">
+      {
+        allPosts.map((post) => (
+          <div class="post-card">
+            {post.frontmatter.cover ? (
+              <img src={post.frontmatter.cover} alt="cover" class="cover" />
+            ) : null}
+
+            <div class="info">
+              <a href={post.url} class="title">
+                {post.frontmatter.title}
+              </a>
+
+              {/* 格式化显示发布时间 */}
+              {post.frontmatter.pubDate ? (
+                <p class="date">{formatDate(post.frontmatter.pubDate)}</p>
+              ) : null}
+
+              {post.frontmatter.description ? (
+                <p class="desc">{post.frontmatter.description}</p>
+              ) : null}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- 右边：最新文章 -->
+    <div class="right-panel">
+      <div class="latest-card">
+        <h2>最新文章</h2>
+        <ul>
+          {
+            latestPosts.map((post) => (
+              <li>
+                <a href={post.url}>{post.frontmatter.title}</a>
+                {post.frontmatter.pubDate ? (
+                  <span class="date">
+                    ({formatDate(post.frontmatter.pubDate)})
+                  </span>
+                ) : null}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-container {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  /* 左边文章区：单列布局，每篇文章占据整行 */
+  .left-panel {
+    flex: 2; /* 占据父容器的两倍空间（右边是1） */
+    display: grid; /* 使用网格布局 */
+    grid-template-columns: 1fr; /* 单列，每篇文章独占一行 */
+    gap: 1.5rem; /* 卡片之间的上下间距 */
+  }
+
+  /* 单篇文章卡片 */
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    padding: 1rem;
+    backdrop-filter: blur(6px);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .cover {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+  }
+  .info .title {
+    font-weight: bold;
+    font-size: 1.05rem;
+    color: #222;
+    text-decoration: none;
+  }
+  .info .title:hover {
+    text-decoration: underline;
+  }
+  .info .date {
+    font-size: 0.85rem;
+    color: #777;
+    margin-top: 0.2rem;
+  }
+  .info .desc {
+    font-size: 0.9rem;
+    color: #444;
+    margin-top: 0.4rem;
+  }
+
+  /* 右边最新文章容器 */
+  .right-panel {
+    flex: 1; /* 占据剩余空间的 1 份 */
+  }
+
+  /* 最新文章卡片整体样式 */
+  .latest-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.7); /* 半透明遮罩效果 */
+    border-radius: 12px; /* 圆角 */
+    padding: 1.5rem;
+    backdrop-filter: blur(6px); /* 背景模糊 */
+    overflow: hidden; /* 隐藏超出部分，保证展开收起时干净 */
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease; /* 悬浮动画 */
+    cursor: pointer;
+  }
+
+  /* 卡片悬浮时的动态效果：微微浮起 + 阴影 */
+  .latest-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  /* 标题始终可见 */
+  .latest-card h2 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    position: relative;
+    z-index: 2; /* 确保在展开内容之上 */
+  }
+
+  /* 文章列表：默认隐藏（透明 + 高度 0 + 下移） */
+  .latest-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(10px); /* 初始下移，给人“浮上来”的感觉 */
+    transition:
+      opacity 0.4s ease,
+      max-height 0.4s ease,
+      transform 0.4s ease;
+    overflow: hidden; /* 防止高度动画时内容外溢 */
+  }
+
+  /* 悬浮时展开文章列表（淡入 + 滑出） */
+  .latest-card:hover ul {
+    opacity: 1;
+    max-height: 500px; /* 设定一个足够大的高度，保证容纳列表 */
+    transform: translateY(0); /* 回到正常位置 */
+  }
+
+  /* 单个文章条目样式 */
+  .latest-card li {
+    margin-bottom: 0.8rem;
+    transition: transform 0.3s ease; /* 悬浮时右移的过渡 */
+  }
+
+  /* 悬浮在具体文章条目时，轻微右移 */
+  .latest-card li:hover {
+    transform: translateX(6px);
+  }
+
+  /* 链接文字样式 */
+  .latest-card a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .latest-card a:hover {
+    text-decoration: underline;
+  }
+
+  /* 日期样式 */
+  .latest-card .date {
+    font-size: 0.8rem;
+    color: #777;
+    margin-left: 0.4rem;
+  }
+</style>

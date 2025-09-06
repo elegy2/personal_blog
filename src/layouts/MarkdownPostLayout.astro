@@ -1,0 +1,78 @@
+--- 
+import BaseLayout from './BaseLayout.astro';
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout pageTitle={frontmatter.title}>
+  <div class="page-bg">
+    <header>
+      <p>{frontmatter.pubDate.toString().slice(0,10)}</p>
+      <p><em>{frontmatter.description}</em></p>
+      <p>作者：{frontmatter.author}</p>
+    </header>
+
+    {frontmatter.image && (
+      <img src={frontmatter.image.url} width="300" alt={frontmatter.image.alt} />
+    )}
+
+    <div class="tags">
+      {frontmatter.tags.map((tag: string) => (
+        <p class="tag"><a href={`/tags/${tag}`}>{tag}</a></p>
+      ))}
+    </div>
+
+    <!-- 正文毛玻璃卡片 -->
+    <div class="glass">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+
+/* 毛玻璃效果 */
+.glass {
+  margin: 2rem auto;
+  padding: 2rem;
+  max-width: 150ch;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+/* 标签容器 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+/* 单个标签（GitHub repo 风格，扁平方形） */
+.tag {
+  display: inline-block;
+  padding: 0.35em 0.8em;
+  font-size: 0.85em;
+  border-radius: 0.4em;
+  background-color: #e6f7ff;
+  color: #007acc;
+  border: 1px solid #b3e5ff;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.tag a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tag:hover {
+  background-color: #cceeff;
+  border-color: #66ccff;
+  color: #005fa3;
+  cursor: pointer;
+}
+</style>
+

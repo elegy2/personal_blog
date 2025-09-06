@@ -1,0 +1,10 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Live2DWithCards from '../components/Live2DWithCards.jsx';
+
+const pageTitle = "Live2D 展示";
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <Live2DWithCards client:load />
+</BaseLayout>

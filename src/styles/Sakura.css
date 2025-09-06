@@ -1,0 +1,27 @@
+/* 🌸 樱花飘落 */
+.sakura {
+  position: fixed;
+  top: -2em;
+  font-size: 1.5em; /* 调整花瓣大小 */
+  pointer-events: none;
+  z-index: 9999;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* 下落动画，带左右摆动 */
+@keyframes fall {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(20px) translateY(50vh) rotate(180deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-20px) translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
