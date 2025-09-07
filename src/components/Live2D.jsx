@@ -10,7 +10,7 @@ export default function Live2D({ selectedModel = 0 }) {
 
   const [currentModel, setCurrentModel] = useState(selectedModel);
   const [showMenu, setShowMenu] = useState(false);
-  const [loading, setLoading] = useState(true); // 新增 loading 状态
+  const [loading, setLoading] = useState(true);
 
   const models = [
     { path: '/models/椿/椿.model3.json', icon: '1' },
@@ -23,7 +23,7 @@ export default function Live2D({ selectedModel = 0 }) {
     { path: '/models/知更鸟/知更鸟.model3.json', icon: '8' }
   ];
 
-  // 缓存已加载模型
+  // 缓存已加载的模型
   const modelCache = useRef({});
 
   useEffect(() => {
@@ -43,6 +43,7 @@ export default function Live2D({ selectedModel = 0 }) {
           document.head.appendChild(script);
         });
       }
+
       const PIXI = await import('pixi.js');
       const { Live2DModel } = await import('pixi-live2d-display/cubism4');
       Live2DModel.registerTicker(PIXI.Ticker);
@@ -58,53 +59,58 @@ export default function Live2D({ selectedModel = 0 }) {
           autoDensity: true,
         });
       }
+
       return { PIXI, Live2DModel };
     }
 
     async function loadModel() {
-      if (currentModel === null) return;
+      if (currentModel === null) {
+        // 隐藏当前模型
+        if (modelRef.current && appRef.current) {
+          modelRef.current.visible = false;
+        }
+        return;
+      }
 
       setLoading(true);
+
       try {
         const { Live2DModel } = await initApp();
         if (!appRef.current) return;
         const app = appRef.current;
 
-        // 卸载旧模型
-        if (modelRef.current) {
-          app.stage.removeChild(modelRef.current);
-          modelRef.current.destroy();
-          modelRef.current = null;
-        }
-
         let model;
+
         if (modelCache.current[currentModel]) {
-          // 使用缓存模型
           model = modelCache.current[currentModel];
         } else {
-          // 异步加载新模型
           model = await Live2DModel.from(models[currentModel].path);
+          // 初始化缩放和锚点
+          const scale = (app.view.height / model.height) * 0.4;
+          model.scale.set(scale);
+          model.anchor.set(0.5, 1);
+          model.x = app.view.width / 2;
+          model.y = app.view.height / 2;
+
           modelCache.current[currentModel] = model;
         }
 
+        // 隐藏所有模型
+        Object.values(modelCache.current).forEach(m => {
+          if (app.stage.children.includes(m)) m.visible = false;
+        });
+
+        // 添加到舞台并显示
+        if (!app.stage.children.includes(model)) {
+          app.stage.addChild(model);
+        }
+        model.visible = true;
         modelRef.current = model;
 
-        const scale = (app.view.height / model.height) * 0.4;
-        model.scale.set(scale);
-        model.anchor.set(0.5, 1);
-
-        // 初始居中位置
-        const modelX = app.view.width / 2;
-        const modelY = app.view.height / 2;
-        model.x = modelX;
-        model.y = modelY;
-
-        app.stage.addChild(model);
-
-        // 拖动 div
+        // 拖拽 div
         const dragDiv = dragDivRef.current;
-        dragDiv.style.left = `${modelX - dragDiv.offsetWidth / 2}px`;
-        dragDiv.style.top = `${modelY - dragDiv.offsetHeight / 2}px`;
+        dragDiv.style.left = `${model.x - dragDiv.offsetWidth / 2}px`;
+        dragDiv.style.top = `${model.y - dragDiv.offsetHeight / 2}px`;
 
         let dragging = false;
         let offsetX = 0;
@@ -118,6 +124,7 @@ export default function Live2D({ selectedModel = 0 }) {
           offsetY = pos.y - model.y;
           e.preventDefault();
         };
+
         const onMouseMove = (e) => {
           if (!dragging) return;
           const pos = {};
@@ -129,6 +136,7 @@ export default function Live2D({ selectedModel = 0 }) {
           dragDiv.style.left = `${newX - dragDiv.offsetWidth / 2}px`;
           dragDiv.style.top = `${newY - dragDiv.offsetHeight / 2}px`;
         };
+
         const onMouseUp = () => { dragging = false; };
 
         dragDiv.addEventListener('mousedown', onMouseDown);
@@ -137,11 +145,6 @@ export default function Live2D({ selectedModel = 0 }) {
 
         setLoading(false);
 
-        return () => {
-          dragDiv.removeEventListener('mousedown', onMouseDown);
-          window.removeEventListener('mousemove', onMouseMove);
-          window.removeEventListener('mouseup', onMouseUp);
-        };
       } catch (err) {
         console.error('[Live2D] 初始化失败', err);
         setLoading(false);
@@ -165,9 +168,8 @@ export default function Live2D({ selectedModel = 0 }) {
           zIndex: 999,
           pointerEvents: 'none',
         }}
-      ></canvas>
+      />
 
-      {/* 拖动 div */}
       <div
         ref={dragDivRef}
         style={{
@@ -183,7 +185,6 @@ export default function Live2D({ selectedModel = 0 }) {
         onMouseEnter={() => setShowMenu(true)}
         onMouseLeave={() => setShowMenu(false)}
       >
-        {/* loading 提示 */}
         {loading && (
           <div
             style={{
@@ -203,7 +204,6 @@ export default function Live2D({ selectedModel = 0 }) {
           </div>
         )}
 
-        {/* 悬浮菜单 */}
         {showMenu && (
           <div
             style={{
@@ -253,5 +253,6 @@ export default function Live2D({ selectedModel = 0 }) {
     </div>
   );
 }
+
 
 
