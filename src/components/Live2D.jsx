@@ -1,3 +1,4 @@
+// src/components/Live2D.jsx
 import { h } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 
@@ -7,22 +8,24 @@ export default function Live2D({ selectedModel = 0 }) {
   const modelRef = useRef(null);
   const dragDivRef = useRef(null);
 
-  // 用外部传入的模型索引来初始化
   const [currentModel, setCurrentModel] = useState(selectedModel);
   const [showMenu, setShowMenu] = useState(false);
+  const [loading, setLoading] = useState(true); // 新增 loading 状态
 
   const models = [
     { path: '/models/椿/椿.model3.json', icon: '1' },
     { path: '/models/秧秧/秧秧.model3.json', icon: '2' },
     { path: '/models/kafuka/kafuka1.model3.json', icon: '3' },
-    { path: '/models/符玄/符玄.model3.json', icon: '4'},
+    { path: '/models/符玄/符玄.model3.json', icon: '4' },
     { path: '/models/Nicole/Nicole.model3.json', icon: '5' },
     { path: '/models/藿藿/藿藿.model3.json', icon: '6' },
     { path: '/models/简/简.model3.json', icon: '7' },
     { path: '/models/知更鸟/知更鸟.model3.json', icon: '8' }
   ];
 
-  // 外部 props 改变时，更新 currentModel
+  // 缓存已加载模型
+  const modelCache = useRef({});
+
   useEffect(() => {
     setCurrentModel(selectedModel);
   }, [selectedModel]);
@@ -50,39 +53,55 @@ export default function Live2D({ selectedModel = 0 }) {
           view: canvasRef.current,
           resizeTo: window,
           backgroundAlpha: 0,
+          resolution: window.devicePixelRatio || 1,
+          antialias: true,
+          autoDensity: true,
         });
       }
       return { PIXI, Live2DModel };
     }
 
     async function loadModel() {
+      if (currentModel === null) return;
+
+      setLoading(true);
       try {
         const { Live2DModel } = await initApp();
         if (!appRef.current) return;
         const app = appRef.current;
 
+        // 卸载旧模型
         if (modelRef.current) {
           app.stage.removeChild(modelRef.current);
           modelRef.current.destroy();
           modelRef.current = null;
         }
 
-        if (currentModel === null) return;
+        let model;
+        if (modelCache.current[currentModel]) {
+          // 使用缓存模型
+          model = modelCache.current[currentModel];
+        } else {
+          // 异步加载新模型
+          model = await Live2DModel.from(models[currentModel].path);
+          modelCache.current[currentModel] = model;
+        }
 
-        const model = await Live2DModel.from(models[currentModel].path);
         modelRef.current = model;
 
-        const scale = (app.view.height / model.height) * 0.5;
+        const scale = (app.view.height / model.height) * 0.4;
         model.scale.set(scale);
         model.anchor.set(0.5, 1);
 
-        let modelX = app.view.width / 2;
-        let modelY = app.view.height;
+        // 初始居中位置
+        const modelX = app.view.width / 2;
+        const modelY = app.view.height / 2;
         model.x = modelX;
         model.y = modelY;
 
         app.stage.addChild(model);
 
+        // 拖动 div
         const dragDiv = dragDivRef.current;
         dragDiv.style.left = `${modelX - dragDiv.offsetWidth / 2}px`;
         dragDiv.style.top = `${modelY - dragDiv.offsetHeight / 2}px`;
@@ -92,29 +111,31 @@ export default function Live2D({ selectedModel = 0 }) {
         let offsetY = 0;
 
         const onMouseDown = (e) => {
+          const pos = {};
+          app.renderer.plugins.interaction.mapPositionToPoint(pos, e.clientX, e.clientY);
           dragging = true;
-          offsetX = e.clientX - model.x;
-          offsetY = e.clientY - model.y;
+          offsetX = pos.x - model.x;
+          offsetY = pos.y - model.y;
           e.preventDefault();
         };
-
         const onMouseMove = (e) => {
           if (!dragging) return;
-          const newX = e.clientX - offsetX;
-          const newY = e.clientY - offsetY;
+          const pos = {};
+          app.renderer.plugins.interaction.mapPositionToPoint(pos, e.clientX, e.clientY);
+          const newX = pos.x - offsetX;
+          const newY = pos.y - offsetY;
           model.x = newX;
           model.y = newY;
           dragDiv.style.left = `${newX - dragDiv.offsetWidth / 2}px`;
           dragDiv.style.top = `${newY - dragDiv.offsetHeight / 2}px`;
         };
-
-        const onMouseUp = () => {
-          dragging = false;
-        };
+        const onMouseUp = () => { dragging = false; };
 
         dragDiv.addEventListener('mousedown', onMouseDown);
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
+
+        setLoading(false);
 
         return () => {
           dragDiv.removeEventListener('mousedown', onMouseDown);
@@ -123,13 +144,12 @@ export default function Live2D({ selectedModel = 0 }) {
         };
       } catch (err) {
         console.error('[Live2D] 初始化失败', err);
+        setLoading(false);
       }
     }
 
     loadModel();
-    return () => {
-      destroyed = true;
-    };
+    return () => { destroyed = true; };
   }, [currentModel]);
 
   return (
@@ -147,7 +167,7 @@ export default function Live2D({ selectedModel = 0 }) {
         }}
       ></canvas>
 
-      {/* 拖动窗口 */}
+      {/* 拖动 div */}
       <div
         ref={dragDivRef}
         style={{
@@ -163,6 +183,26 @@ export default function Live2D({ selectedModel = 0 }) {
         onMouseEnter={() => setShowMenu(true)}
         onMouseLeave={() => setShowMenu(false)}
       >
+        {/* loading 提示 */}
+        {loading && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              color: '#fff',
+              fontSize: '16px',
+              background: 'rgba(0,0,0,0.5)',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              zIndex: 105,
+            }}
+          >
+            模型加载中...
+          </div>
+        )}
+
         {/* 悬浮菜单 */}
         {showMenu && (
           <div
@@ -213,3 +253,5 @@ export default function Live2D({ selectedModel = 0 }) {
     </div>
   );
 }
+
+

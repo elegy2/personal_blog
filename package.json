@@ -9,8 +9,10 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/netlify": "^6.5.9",
     "@astrojs/preact": "^4.1.0",
     "@astrojs/rss": "^4.0.12",
+    "@astrojs/vercel": "^8.2.7",
     "astro": "^5.13.3",
     "pixi-live2d-display": "^0.4.0",
     "pixi.js": "^6.5.10",
@@ -18,6 +20,5 @@
   },
   "devDependencies": {
     "astro": "^5.13.5"
-    
   }
 }
