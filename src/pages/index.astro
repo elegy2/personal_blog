@@ -11,6 +11,21 @@ const posts = Object.values(allPosts)
   .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
 const pageTitle = "Elegy の Blog";
+
+const postArray = Object.values(allPosts);
+
+// 获取所有标签并去重
+const tags = [
+  ...new Set(
+    postArray
+      .map((post: any) => {
+        const t = post.frontmatter.tags;
+        if (!t) return [];
+        return Array.isArray(t) ? t : [t];
+      })
+      .flat(),
+  ),
+];
 ---
 
 <BaseLayout pageTitle={pageTitle}>
@@ -46,7 +61,24 @@ const pageTitle = "Elegy の Blog";
               href="https://space.bilibili.com/437559763?spm_id_from=333.1007.0.0"
               target="_blank">📺️ Bilibili</a
             >
+            <a
+              href="https://blog.csdn.net/weixin_74177409?type=blog"
+              target="_blank">💻 CSDN</a
+            >
           </div>
+        </div>
+
+        <!-- 标签毛玻璃区域 -->
+        <div
+          class="author-tags mt-4 p-3 rounded-xl bg-white/20 backdrop-blur-lg flex flex-wrap gap-2"
+        >
+          {
+            tags.map((tag) => (
+              <a href={`/tags/${tag}`} class="tag-item" key={tag}>
+                {tag}
+              </a>
+            ))
+          }
         </div>
       </aside>
 
@@ -66,7 +98,9 @@ const pageTitle = "Elegy の Blog";
 
         <!-- 博客简介 -->
         <section class="fade-in" style="animation-delay: 0.2s;">
-          <p>该博客主要分享 <strong>计算机专业相关内容</strong>，包括：</p>
+          <p>
+            该博客主要分享 <strong>计算机专业相关内容</strong>，包括：
+          </p>
           <ul class="highlight-list">
             <li>🏆 竞赛项目经验</li>
             <li>💼 实习经历</li>
@@ -207,7 +241,7 @@ const pageTitle = "Elegy の Blog";
       width: 100%;
       padding: 16px;
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.5);
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
       color: #000;
@@ -251,6 +285,49 @@ const pageTitle = "Elegy の Blog";
       text-decoration: underline;
     }
 
+    /*标签页相关*/
+    .author-tags {
+      margin-top: 1rem; /* 调整这里的数值即可增大或缩小间隔 */
+      /* 毛玻璃效果 */
+      background-color: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px); /* Safari 支持 */
+      border-radius: 1rem;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* 标签样式 */
+    .author-tags .tag-item {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 9999px; /* 圆角 */
+      color: #1e40af; /* 蓝色文字 */
+      background-color: rgba(255, 255, 255, 0.5); /* 半透明背景 */
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .author-tags .tag-item:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+      color: #0c4a6e;
+    }
+
+    html.dark .author-tags {
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    /*悬浮*/
+    */ .author-tags a {
+      transition: transform 0.3s ease; /* 平滑过渡效果 */
+    }
+
+    .author-tags a:hover {
+      transform: translateY(-5px); /* 悬停时上移 */
+    }
     /* 夜间模式字体颜色 */
     html.dark .author-card {
       color: #fff;
@@ -270,7 +347,7 @@ const pageTitle = "Elegy の Blog";
 
     /* 夜间模式下，背景改为深色半透明 */
     html.dark .content-area {
-      background: rgba(30, 30, 30, 0.75);
+      background: rgba(30, 30, 30, 0.5);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
 
