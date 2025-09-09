@@ -69,16 +69,19 @@ export default function TarotGallery({ onSelect }) {
 
           .tarot-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 140px;
+            grid-template-columns: repeat(4, 1fr); /* 固定 4 列 */
+            gap: clamp(20px, 5vw, 80px);           /* 间距随屏幕变化 */
             justify-items: center;
             align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 1rem; /* 避免边缘贴死 */
           }
 
           .card {
             position: relative;
-            width: 200px;
-            height: 300px;
+            width: clamp(100px, 15vw, 200px); /* 小屏最小100px，随屏幕放大，最大200px */
+            aspect-ratio: 2 / 3;               /* 保持宽高比 */
             perspective: 1000px;
             cursor: pointer;
           }
