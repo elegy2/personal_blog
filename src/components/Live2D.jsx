@@ -93,6 +93,18 @@ export default function Live2D({ selectedModel = 0 }) {
           model.y = app.view.height / 2;
 
           modelCache.current[currentModel] = model;
+
+          // === 新增：根据模型缩放设置拖动框大小 ===
+          const dragDiv = dragDivRef.current;
+          // 取 canvas 高度的 40% 作为模型高度
+          const boxHeight = app.view.height * 0.4;
+          // 模型宽高比
+          const aspectRatio = model.width / model.height;
+          // 根据比例计算宽度
+          const boxWidth = boxHeight * aspectRatio;
+
+          dragDiv.style.width = `${boxWidth}px`;
+          dragDiv.style.height = `${boxHeight}px`;
         }
 
         // 隐藏所有模型
