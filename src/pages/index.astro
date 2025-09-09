@@ -3,19 +3,34 @@ import "../styles/global.css";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Greeting from "../components/Greeting";
 import Sakura from "../components/Sakura.jsx";
-import Live2D from '../components/Live2D.jsx';
+import Live2D from "../components/Live2D.jsx";
 
-// 导入 Markdown 文档
 const allPosts = import.meta.glob("../pages/posts/*.md", { eager: true });
 const posts = Object.values(allPosts)
   .map((post) => post.frontmatter)
   .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
 const pageTitle = "Elegy の Blog";
+
+const postArray = Object.values(allPosts);
+
+// 获取所有标签并去重
+const tags = [
+  ...new Set(
+    postArray
+      .map((post: any) => {
+        const t = post.frontmatter.tags;
+        if (!t) return [];
+        return Array.isArray(t) ? t : [t];
+      })
+      .flat(),
+  ),
+];
 ---
 
 <BaseLayout pageTitle={pageTitle}>
   <Live2D client:only="preact" />
+
   <!-- 欢迎页面 -->
   <div class="splash-screen" id="splashScreen">
     <div class="splash-content">
@@ -27,73 +42,115 @@ const pageTitle = "Elegy の Blog";
     <button class="skip-btn" id="skipBtn">跳过 &raquo;</button>
   </div>
 
-  <!-- 博客内容 -->
+  <!-- 主体内容 -->
   <div class="main-content" id="mainContent" style="opacity: 0; display: none;">
-    <!-- 问候语 -->
-    <Greeting
-      client:load
-      messages={[
-        "Chiallo",
-        "Hallo",
-        "你好",
-        "こんにちは",
-        "Здравствыйте",
-        "안녕하세요",
-      ]}
-    />
+    <div class="layout-container">
+      <!-- 左边侧边栏：作者资料 -->
+      <aside class="sidebar fade-in">
+        <div class="author-card">
+          <img
+            src="/photos/elegy_avatar.jpg"
+            alt="作者头像"
+            class="author-avatar"
+          />
+          <div class="author-info">
+            <h3>Elegy</h3>
+            <p>AI / 量化 / 全栈开发</p>
+            <a href="https://github.com/elegy2" target="_blank">🌟 GitHub</a>
+            <a
+              href="https://space.bilibili.com/437559763?spm_id_from=333.1007.0.0"
+              target="_blank">📺️ Bilibili</a
+            >
+            <a
+              href="https://blog.csdn.net/weixin_74177409?type=blog"
+              target="_blank">💻 CSDN</a
+            >
+          </div>
+        </div>
 
-    <!-- 博客简介 -->
-    <section class="fade-in" style="animation-delay: 0.2s;">
-      <p>该博客主要分享 <strong>计算机专业相关内容</strong>，包括：</p>
-      <ul class="highlight-list">
-        <li>🏆 竞赛项目经验</li>
-        <li>💼 实习经历</li>
-        <li>🎓 保研与留学相关经验</li>
-        <li>📚 课程学习心得与学习技巧</li>
-        <li>🎯 大学常见的一些注意事项</li>
-      </ul>
-      <p>
-        如果觉得有用，希望能 follow 我的 <strong>GitHub</strong
-        >，真的很重要！拜托了 orz
-      </p>
-      <p>
-        另外，博客设有 <strong>树洞环节</strong
-        >，同学们可自由投稿或提问。投稿/提问请联系：
-        <a href="mailto:3393205446@qq.com" class="highlight-contact"
-          >3393205446@qq.com</a
+        <!-- 标签毛玻璃区域 -->
+        <div
+          class="author-tags mt-4 p-3 rounded-xl bg-white/20 backdrop-blur-lg flex flex-wrap gap-2"
         >
-      </p>
-    </section>
-
-    <!-- 最新文章自动滚动列表 -->
-    <section
-      class="blog-section latest-posts fade-in"
-      style="animation-delay: 0.2s;"
-    >
-      <h3>📰 最新文章</h3>
-      <div class="scroll-wrapper">
-        <div class="scroll-content" id="scrollContent">
-          {/* 文章列表渲染部分 */}
           {
-            posts.map((post) => (
-              <div class="scroll-item" key={post.url}>
-                <span class="bullet">⭐</span>
-                <a href={post.url} target="_blank">
-                  {post.title}
-                </a>
-              </div>
+            tags.map((tag) => (
+              <a href={`/tags/${tag}`} class="tag-item" key={tag}>
+                {tag}
+              </a>
             ))
           }
         </div>
-      </div>
-    </section>
+      </aside>
 
-    <Sakura client:only="preact" count={30} />
+      <!-- 右边内容 -->
+      <div class="content-area">
+        <Greeting
+          client:load
+          messages={[
+            "Chiallo",
+            "Hallo",
+            "你好",
+            "こんにちは",
+            "Здравствыйте",
+            "안녕하세요",
+          ]}
+        />
+
+        <!-- 博客简介 -->
+        <section class="fade-in" style="animation-delay: 0.2s;">
+          <p>
+            该博客主要分享 <strong>计算机专业相关内容</strong>，包括：
+          </p>
+          <ul class="highlight-list">
+            <li>🏆 竞赛项目经验</li>
+            <li>💼 实习经历</li>
+            <li>🎓 保研与留学相关经验</li>
+            <li>📚 课程学习心得与学习技巧</li>
+            <li>🎯 大学常见的一些注意事项</li>
+          </ul>
+          <p>
+            如果觉得有用，希望能 follow 我的 <strong>GitHub</strong
+            >，真的很重要！拜托了 orz
+          </p>
+          <p>
+            另外，博客设有 <strong>树洞环节</strong
+            >，同学们可自由投稿或提问。投稿/提问请联系：
+            <a href="mailto:3393205446@qq.com" class="highlight-contact">
+              3393205446@qq.com
+            </a>
+          </p>
+        </section>
+
+        <!-- 最新文章 -->
+        <section
+          class="blog-section latest-posts fade-in"
+          style="animation-delay: 0.2s;"
+        >
+          <h3>📰 最新文章</h3>
+          <div class="scroll-wrapper">
+            <div class="scroll-content" id="scrollContent">
+              {
+                posts.map((post) => (
+                  <div class="scroll-item" key={post.url}>
+                    <span class="bullet">⭐</span>
+                    <a href={post.url} target="_blank">
+                      {post.title}
+                    </a>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </section>
+
+        <Sakura client:only="preact" count={30} />
+      </div>
+    </div>
   </div>
 
-  <!-- 首页页面专用样式 -->
+  <!-- 样式 -->
   <style>
-    /* 半透明动态背景 */
+    /* 半透明背景 */
     body::before {
       content: "";
       position: fixed;
@@ -110,7 +167,7 @@ const pageTitle = "Elegy の Blog";
       transform: scale(1.02);
     }
 
-    /* 欢迎页样式 */
+    /* 欢迎页 */
     .splash-screen {
       position: fixed;
       top: 0;
@@ -125,12 +182,10 @@ const pageTitle = "Elegy の Blog";
       z-index: 9999;
       transition: opacity 1s ease-out;
     }
-
     .splash-content {
       text-align: center;
       color: white;
     }
-
     .welcome-title {
       font-size: 3.5rem;
       margin-bottom: 2rem;
@@ -139,7 +194,6 @@ const pageTitle = "Elegy の Blog";
       animation: fadeInUp 1s forwards 0.5s;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
-
     .progress-container {
       width: 300px;
       height: 4px;
@@ -148,7 +202,6 @@ const pageTitle = "Elegy の Blog";
       overflow: hidden;
       margin: 2rem 0;
     }
-
     .progress-bar {
       height: 100%;
       width: 0%;
@@ -156,7 +209,6 @@ const pageTitle = "Elegy の Blog";
       border-radius: 4px;
       transition: width 0.3s ease;
     }
-
     .skip-btn {
       position: absolute;
       bottom: 30px;
@@ -169,19 +221,146 @@ const pageTitle = "Elegy の Blog";
       cursor: pointer;
       transition: all 0.3s ease;
     }
-
     .skip-btn:hover {
       background: rgba(255, 255, 255, 0.3);
     }
 
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
+    /* flex 主体 */
+    .layout-container {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1rem;
+    }
+    .sidebar {
+      width: 220px;
+      min-width: 200px;
+    }
+
+    /* 作者卡片 */
+    .author-card {
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform 0.3s ease;
+    }
+    .author-card:hover {
+      transform: translateY(-5px);
+    }
+    .author-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+    }
+    .author-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .author-info h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    .author-info p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    .author-info a {
+      text-decoration: none;
+      color: #7daaf7;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .author-info a:hover {
+      text-decoration: underline;
+    }
+
+    /*标签页相关*/
+    .author-tags {
+      margin-top: 1rem; /* 调整这里的数值即可增大或缩小间隔 */
+      /* 毛玻璃效果 */
+      background-color: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px); /* Safari 支持 */
+      border-radius: 1rem;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* 标签样式 */
+    .author-tags .tag-item {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 9999px; /* 圆角 */
+      color: #1e40af; /* 蓝色文字 */
+      background-color: rgba(255, 255, 255, 0.5); /* 半透明背景 */
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .author-tags .tag-item:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+      color: #0c4a6e;
+    }
+
+    html.dark .author-tags {
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    /*悬浮*/
+    */ .author-tags a {
+      transition: transform 0.3s ease; /* 平滑过渡效果 */
+    }
+
+    .author-tags a:hover {
+      transform: translateY(-5px); /* 悬停时上移 */
+    }
+    /* 夜间模式字体颜色 */
+    html.dark .author-card {
+      color: #fff;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .content-area {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.5); /* 提高透明度，白天模式 */
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition:
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+
+    /* 夜间模式下，背景改为深色半透明 */
+    html.dark .content-area {
+      background: rgba(30, 30, 30, 0.5);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .layout-container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
       }
     }
 
-    /* 最新文章滚动容器 */
+    /* 最新文章滚动 */
     .latest-posts {
       margin: 2rem 0;
       border-top: 1px solid transparent;
@@ -206,7 +385,6 @@ const pageTitle = "Elegy の Blog";
       font-weight: 500;
     }
     .latest-posts .bullet {
-      display: inline-block;
       margin-right: 0.5rem;
       animation: bounce 1.5s infinite;
     }
@@ -220,7 +398,6 @@ const pageTitle = "Elegy の Blog";
         transform: translateY(-5px);
       }
     }
-
     @keyframes scroll-left {
       0% {
         transform: translateX(0);
@@ -229,19 +406,9 @@ const pageTitle = "Elegy の Blog";
         transform: translateX(-50%);
       }
     }
-
-    /* 文章链接样式 */
-    .latest-posts a {
-      text-decoration: none;
-      color: #333;
-      font-weight: 500;
-    }
-    .latest-posts a:hover {
-      text-decoration: underline;
-      color: #ff69b4;
-    }
   </style>
 
+  <!-- 欢迎页逻辑 -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const splashScreen = document.getElementById("splashScreen");
@@ -250,39 +417,29 @@ const pageTitle = "Elegy の Blog";
       const skipBtn = document.getElementById("skipBtn");
       let progress = 0;
 
-      // 进度条动画
       const progressInterval = setInterval(() => {
         progress += 8;
         progressBar.style.width = progress + "%";
-
         if (progress >= 100) {
           clearInterval(progressInterval);
           enterSite();
         }
       }, 50);
 
-      // 跳过按钮点击事件
       skipBtn.addEventListener("click", () => {
         clearInterval(progressInterval);
         enterSite();
       });
-
-      // 点击页面其他地方跳过
       document.body.addEventListener("click", () => {
         clearInterval(progressInterval);
         enterSite();
       });
 
-      // 进入网站内容
       function enterSite() {
-        // 淡出欢迎页面
         splashScreen.style.opacity = "0";
-        // 显示主要内容
         setTimeout(() => {
           splashScreen.style.display = "none";
           mainContent.style.display = "block";
-
-          // 淡入主要内容
           setTimeout(() => {
             mainContent.style.opacity = "1";
           }, 50);
