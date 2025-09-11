@@ -1,34 +1,209 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Live2D from '../../components/Live2D.jsx';
 const allPosts = await Astro.glob('../posts/*.md');
 const tags = [...new Set(allPosts.map((post) => post.frontmatter.tags).flat())];
+
+// 统计标签出现次数
+const tagCount = {};
+allPosts.forEach((post) => {
+  post.frontmatter.tags?.forEach((tag) => {
+    tagCount[tag] = (tagCount[tag] || 0) + 1;
+  });
+});
+
+// 排序取前3热门标签
+const hotTags = Object.entries(tagCount)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 3);
 const pageTitle = "标签索引";
 ---
 
 <BaseLayout pageTitle={pageTitle}>
-  <div class="tags">
-    {tags.map((tag) => (
-      <p class="tag"><a href={`/tags/${tag}`}>{tag}</a></p>
-    ))}
+  <Live2D client:only="preact" />
+  <div class="container">
+    <div class="page-header fade-in">
+      <h1 class="title-animate">🔖 标签索引</h1>
+      <p>共 {allPosts.length} 篇文章 · {tags.length} 个标签</p>
+    </div>
+
+    <div class="tags fade-in">
+      {tags.map((tag) => (
+        <p class="tag" data-count={tagCount[tag]}>
+          <a href={`/tags/${tag}`}>{tag}</a>
+        </p>
+      ))}
+    </div>
+
+    <div class="hot-tags fade-in">
+      <h2>🔥 热门标签</h2>
+      <ul>
+        {hotTags.map(([tag, count]) => (
+          <li class="hot-tag-item">
+            <a href={`/tags/${tag}`}>{tag}</a> <span>({count})</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 </BaseLayout>
 
 <style>
-  a {
-    color: #00539F;
-  }
+/* 半透明容器 */
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.35), rgba(245,245,245,0.75));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  animation: containerFadeIn 1s ease forwards;
+  position: relative;
+  overflow: hidden;
+}
 
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-  }
+/* 顶部信息 */
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
 
-  .tag {
-    margin: 0.25em;
-    border: dotted 1px #a1a1a1;
-    border-radius: .5em;
-    padding: .5em 1em;
-    font-size: 1.15em;
-    background-color: #F8FCFD;
+.page-header h1 {
+  font-size: 2.4rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.page-header p {
+  color: #555;
+  font-size: 1.1rem;
+}
+
+/* 标题渐变动画 */
+.title-animate {
+  background: linear-gradient(90deg, #ff512f, #00539F, #ff512f);
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: shine 4s linear infinite;
+}
+@keyframes shine {
+  to {
+    background-position: 200% center;
   }
+}
+
+/* 标签列表 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75em;
+  margin: 2rem 0;
+}
+
+.tag {
+  margin: 0.25em;
+  border: solid 1px #ddd;
+  border-radius: .5em;
+  padding: .5em 1em;
+  font-size: 1.1em;
+  background-color: #F8FCFD;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+.tag:hover {
+  transform: translateY(-6px) scale(1.1);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+/* 呼吸动画 */
+.tag {
+  animation: pulse 3s infinite ease-in-out;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.tag a {
+  color: #00539F;
+  text-decoration: none;
+}
+
+/* 热门标签 */
+.hot-tags {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 2px dashed #ddd;
+}
+
+.hot-tags h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #ff5722;
+}
+
+.hot-tags ul {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.hot-tag-item {
+  font-size: 1.2rem;
+  position: relative;
+  cursor: pointer;
+}
+.hot-tag-item:hover {
+  transform: scale(1.15);
+  transition: transform 0.2s ease;
+}
+/* 波纹扩散 */
+.hot-tag-item::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  border-radius: 50%;
+  background: rgba(255,87,34,0.2);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+.hot-tag-item:hover::after {
+  animation: ripple 0.8s ease-out;
+}
+@keyframes ripple {
+  from { width: 0; height: 0; opacity: 0.6; }
+  to { width: 120px; height: 120px; opacity: 0; }
+}
+
+.hot-tags a {
+  color: #333;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* 入场动画 */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+.fade-in:nth-child(1) { animation-delay: 0.2s; }
+.fade-in:nth-child(2) { animation-delay: 0.4s; }
+.fade-in:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes containerFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
 </style>
