@@ -1,0 +1,19 @@
+--- 
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TarotGallery from "../components/TarotCardDrawer.jsx"; // 你的 Preact 组件
+--- 
+
+<BaseLayout pageTitle="塔罗牌占卜">
+  <!-- 使用 Preac组件展示塔罗牌 -->
+  <div class="tarot-wrapper">
+    <TarotGallery client:load />
+  </div>
+</BaseLayout>
+
+<style>
+  .tarot-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+</style>

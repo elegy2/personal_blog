@@ -1,0 +1,112 @@
+[
+  {
+    "name": "愚者",
+    "upright": "新的开始，自由，冒险，天真",
+    "reversed": "鲁莽，不负责任，风险"
+  },
+  {
+    "name": "魔术师",
+    "upright": "意志力，创造力，技能",
+    "reversed": "操纵，欺骗，未使用的才能"
+  },
+  {
+    "name": "女祭司",
+    "upright": "直觉，神秘，潜意识",
+    "reversed": "秘密，隐藏的议程，沉默"
+  },
+  {
+    "name": "皇后",
+    "upright": "养育，丰富，感性",
+    "reversed": "依赖，窒息，空虚"
+  },
+  {
+    "name": "皇帝",
+    "upright": "权威，结构，控制",
+    "reversed": "专制，僵化，控制"
+  },
+  {
+    "name": "教皇",
+    "upright": "信仰，传统，灵性",
+    "reversed": "个人信仰，非常规"
+  },
+  {
+    "name": "恋人",
+    "upright": "爱情，和谐，关系",
+    "reversed": "不平衡，不和谐，错误选择"
+  },
+  {
+    "name": "战车",
+    "upright": "意志，胜利，assertion",
+    "reversed": "侵略，缺乏方向"
+  },
+  {
+    "name": "力量",
+    "upright": "勇气，说服力，影响力",
+    "reversed": "弱点，自我怀疑"
+  },
+  {
+    "name": "隐士",
+    "upright": "内省，谨慎，孤独",
+    "reversed": "孤立，退缩"
+  },
+  {
+    "name": "命运之轮",
+    "upright": "命运，转折点，机遇",
+    "reversed": "不幸，抵抗改变"
+  },
+  {
+    "name": "正义",
+    "upright": "公正，真理，因果",
+    "reversed": "不公正，偏见"
+  },
+  {
+    "name": "倒吊人",
+    "upright": "牺牲，新视角，放手",
+    "reversed": "停滞，抗拒牺牲"
+  },
+  {
+    "name": "死神",
+    "upright": "结束，转变，新的开始",
+    "reversed": "抗拒改变，停滞"
+  },
+  {
+    "name": "节制",
+    "upright": "平衡，和谐，耐心",
+    "reversed": "不平衡，过度"
+  },
+  {
+    "name": "恶魔",
+    "upright": "束缚，物质主义，成瘾",
+    "reversed": "解脱，自由，觉醒"
+  },
+  {
+    "name": "塔",
+    "upright": "剧变，觉醒，启示",
+    "reversed": "避免灾难，恐惧改变"
+  },
+  {
+    "name": "星星",
+    "upright": "希望，灵感，宁静",
+    "reversed": "绝望，失去信心"
+  },
+  {
+    "name": "月亮",
+    "upright": "幻觉，恐惧，潜意识",
+    "reversed": "释放恐惧，真相"
+  },
+  {
+    "name": "太阳",
+    "upright": "快乐，成功，活力",
+    "reversed": "暂时的挫折，过度自信"
+  },
+  {
+    "name": "审判",
+    "upright": "重生，内省，觉醒",
+    "reversed": "自我怀疑，拒绝反省"
+  },
+  {
+    "name": "世界",
+    "upright": "完成，成就，旅行",
+    "reversed": "未完成，缺乏结束"
+  }
+]
