@@ -98,6 +98,9 @@ export default function TarotGallery() {
                 <span>点击翻牌</span>
               </div>
               <div className="card-front">
+                <div className={`tarot-img-wrapper ${card.isReversed ? 'reversed' : ''}`}>
+                  <img src={card.image} alt={card.name} className="tarot-img" />
+                </div>
                 <h3>{card.name} ({card.isReversed ? '逆位' : '正位'})</h3>
                 <p>{card.isReversed ? card.reversed : card.upright}</p>
                 <p className="position-label">{['过去','现在','未来'][idx]}</p>
@@ -147,105 +150,233 @@ export default function TarotGallery() {
 
       <style>
         {`
-        .tarot-gallery {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 1.5rem;
-        }
-        .question-box {
-          display: flex;
-          gap: 1rem;
-        }
-        input {
-          padding: 0.5rem;
-          border-radius: 6px;
-          border: 1px solid #ccc;
-        }
-        button {
-          padding: 0.5rem 1rem;
-          border: none;
-          border-radius: 6px;
-          background-color: #e67e22;
-          color: #fff;
-          cursor: pointer;
-        }
-        button:hover { background-color: #d35400; }
-        .tarot-grid {
-          display: flex;
-          gap: 2rem;
-        }
-        .card {
-          width: 150px;
-          height: 220px;
-          perspective: 1000px;
-          cursor: pointer;
-        }
-        .card-inner {
-          width: 100%;
-          height: 100%;
-          position: relative;
-          transform-style: preserve-3d;
-          transition: transform 0.6s;
-        }
-        .card.flipped .card-inner { transform: rotateY(180deg); }
-        .card-front, .card-back {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          border-radius: 12px;
-          backface-visibility: hidden;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding: 0.5rem;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-          text-align: center;
-        }
-        .card-back { background: #2c3e50; color: #fff; }
-        .card-front { background: #fef9f0; transform: rotateY(180deg); color: #333; }
-        .position-label { margin-top: 0.5rem; font-weight: bold; color: #e67e22; }
+.tarot-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem; /* ↓ 减小整体模块间距 */
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
 
-        /* 弹窗 */
-        .modal-overlay {
-          position: fixed;
-          top:0; left:0; right:0; bottom:0;
-          background: rgba(0,0,0,0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-        }
-        .modal {
-          background: #fff;
-          padding: 1rem;
-          border-radius: 8px;
-          max-width: 700px;
-          width: 90%;
-          max-height: 80vh;
-          overflow-y: auto;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 1rem;
-        }
-        th, td {
-          border: 1px solid #ccc;
-          padding: 0.5rem;
-          text-align: left;
-          color: #2c3e50; /* 设置表头和单元格文字颜色 */
-        }
-          
-        .table-text {
-          color: #2c3e50; /* 修改文字颜色为深蓝色，更好阅读 */
-        }
-        .close-btn {
-          margin-top: 1rem;
-          background-color: #888;
-        }
-        .close-btn:hover { background-color: #555; }
+.question-box {
+  display: flex;
+  gap: 0.5rem; /* ↓ 按钮与输入框更紧凑 */
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+button {
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #e67e22;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #d35400;
+}
+
+/* 卡片区 */
+.tarot-grid {
+  display: flex;
+  gap: 1rem; /* ↓ 缩小卡片间距 */
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+/* 单张卡片 */
+.card {
+  width: 230px;
+  height: 440px;
+  perspective: 1000px;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.4rem; /* ↓ 减小卡片内留白 */
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.card-back {
+  background: #2c3e50;
+  color: #fff;
+  justify-content: center;
+}
+
+.card-front {
+  background: #fef9f0;
+  transform: rotateY(180deg);
+  color: #333;
+}
+
+/* 图片与文字比例优化 */
+.tarot-img-wrapper {
+  width: 100%;
+  height: 75%; /* ↑ 增大图片所占空间 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 0.4rem;
+}
+
+.tarot-img-wrapper.reversed {
+  transform: rotate(180deg);
+}
+
+.tarot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.card-front h3 {
+  font-size: 1rem;
+  margin: 0.25rem 0;
+}
+
+.card-front p {
+  font-size: 0.8rem;
+  margin: 0.25rem 0;
+  line-height: 1.25;
+}
+
+.position-label {
+  margin-top: 0.3rem;
+  font-weight: bold;
+  color: #e67e22;
+}
+
+/* 弹窗 */
+.modal-overlay {
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 0.8rem;
+  border-radius: 8px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.8rem;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.4rem;
+  text-align: left;
+  color: #2c3e50;
+}
+
+.close-btn {
+  margin-top: 0.8rem;
+  background-color: #888;
+}
+.close-btn:hover {
+  background-color: #555;
+}
+
+/* ✅ 响应式适配 */
+@media (max-width: 1024px) {
+  .tarot-grid {
+    gap: 0.8rem;
+  }
+  .card {
+    width: 210px;
+    height: 410px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tarot-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .card {
+    width: 80%;
+    max-width: 280px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 90%;
+    height: 360px;
+  }
+  .card-front h3 {
+    font-size: 0.95rem;
+  }
+  .card-front p {
+    font-size: 0.78rem;
+  }
+  button {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+  }
+}
+
         `}
       </style>
     </div>

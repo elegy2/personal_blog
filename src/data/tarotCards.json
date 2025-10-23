@@ -2,111 +2,133 @@
   {
     "name": "愚者",
     "upright": "新的开始，自由，冒险，天真",
-    "reversed": "鲁莽，不负责任，风险"
+    "reversed": "鲁莽，不负责任，风险",
+    "image": "/tarot/1.png"
   },
   {
     "name": "魔术师",
     "upright": "意志力，创造力，技能",
-    "reversed": "操纵，欺骗，未使用的才能"
+    "reversed": "操纵，欺骗，未使用的才能",
+    "image": "/tarot/2.png"
   },
   {
     "name": "女祭司",
     "upright": "直觉，神秘，潜意识",
-    "reversed": "秘密，隐藏的议程，沉默"
+    "reversed": "秘密，隐藏的议程，沉默",
+    "image": "/tarot/3.png"
   },
   {
     "name": "皇后",
     "upright": "养育，丰富，感性",
-    "reversed": "依赖，窒息，空虚"
+    "reversed": "依赖，窒息，空虚",
+    "image": "/tarot/4.png"
   },
   {
     "name": "皇帝",
     "upright": "权威，结构，控制",
-    "reversed": "专制，僵化，控制"
+    "reversed": "专制，僵化，控制",
+    "image": "/tarot/5.png"
   },
   {
     "name": "教皇",
     "upright": "信仰，传统，灵性",
-    "reversed": "个人信仰，非常规"
+    "reversed": "个人信仰，非常规",
+    "image": "/tarot/6.png"
   },
   {
     "name": "恋人",
     "upright": "爱情，和谐，关系",
-    "reversed": "不平衡，不和谐，错误选择"
+    "reversed": "不平衡，不和谐，错误选择",
+    "image": "/tarot/7.png"
   },
   {
     "name": "战车",
     "upright": "意志，胜利，assertion",
-    "reversed": "侵略，缺乏方向"
+    "reversed": "侵略，缺乏方向",
+    "image": "/tarot8.png"
   },
   {
     "name": "力量",
     "upright": "勇气，说服力，影响力",
-    "reversed": "弱点，自我怀疑"
+    "reversed": "弱点，自我怀疑",
+    "image": "/tarot/9.png"
   },
   {
     "name": "隐士",
     "upright": "内省，谨慎，孤独",
-    "reversed": "孤立，退缩"
+    "reversed": "孤立，退缩",
+    "image": "/tarot/10.png"
   },
   {
     "name": "命运之轮",
     "upright": "命运，转折点，机遇",
-    "reversed": "不幸，抵抗改变"
+    "reversed": "不幸，抵抗改变",
+    "image": "/tarot/11.png"
   },
   {
     "name": "正义",
     "upright": "公正，真理，因果",
-    "reversed": "不公正，偏见"
+    "reversed": "不公正，偏见",
+    "image": "/tarot/12.png"
   },
   {
     "name": "倒吊人",
     "upright": "牺牲，新视角，放手",
-    "reversed": "停滞，抗拒牺牲"
+    "reversed": "停滞，抗拒牺牲",
+    "image": "/tarot/13.png"
   },
   {
     "name": "死神",
     "upright": "结束，转变，新的开始",
-    "reversed": "抗拒改变，停滞"
+    "reversed": "抗拒改变，停滞",
+    "image": "/tarot/14.png"
   },
   {
     "name": "节制",
     "upright": "平衡，和谐，耐心",
-    "reversed": "不平衡，过度"
+    "reversed": "不平衡，过度",
+    "image": "/tarot/15.png"
   },
   {
     "name": "恶魔",
     "upright": "束缚，物质主义，成瘾",
-    "reversed": "解脱，自由，觉醒"
+    "reversed": "解脱，自由，觉醒",
+    "image": "/tarot/16.png"
   },
   {
     "name": "塔",
     "upright": "剧变，觉醒，启示",
-    "reversed": "避免灾难，恐惧改变"
+    "reversed": "避免灾难，恐惧改变",
+    "image": "/tarot/17.png"
   },
   {
     "name": "星星",
     "upright": "希望，灵感，宁静",
-    "reversed": "绝望，失去信心"
+    "reversed": "绝望，失去信心",
+    "image": "/tarot/18.png"
   },
   {
     "name": "月亮",
     "upright": "幻觉，恐惧，潜意识",
-    "reversed": "释放恐惧，真相"
+    "reversed": "释放恐惧，真相",
+    "image": "/tarot/19.png"
   },
   {
     "name": "太阳",
     "upright": "快乐，成功，活力",
-    "reversed": "暂时的挫折，过度自信"
+    "reversed": "暂时的挫折，过度自信",
+    "image": "/tarot/20.png"
   },
   {
     "name": "审判",
     "upright": "重生，内省，觉醒",
-    "reversed": "自我怀疑，拒绝反省"
+    "reversed": "自我怀疑，拒绝反省",
+    "image": "/tarot/21.png"
   },
   {
     "name": "世界",
     "upright": "完成，成就，旅行",
-    "reversed": "未完成，缺乏结束"
+    "reversed": "未完成，缺乏结束",
+    "image": "/tarot/22.png"
   }
 ]
