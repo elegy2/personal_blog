@@ -1,18 +1,15 @@
 ---
-import "../styles/global.css";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Live2DPersistent from "../components/Live2DPersistent.jsx";
 import Sakura from "../components/Sakura.jsx";
 
-const pageTitle = "关于我们团队";
-const heart_title = "开发网站的初衷";
-const section_title = "网站内容";
+const pageTitle = "关于我们";
 
 // 团队成员数据
 const team = [
   {
     name: "Elegy(一粒鸡)",
-    avatar: "/photos/elegy_avatar.jpg", // 左上角头像
+    avatar: "/photos/elegy_avatar.jpg",
     country: "中国",
     occupation: "学生",
     school: "伟大的南方平凡学校SCNU🌸🦁",
@@ -66,172 +63,505 @@ const team = [
 ];
 ---
 
-<html lang="zh-cn">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{pageTitle}</title>
+<BaseLayout pageTitle={pageTitle}>
+  <Live2DPersistent client:only="preact" />
 
-    <style>
-      h1 {
-        color: purple;
-        font-size: 3rem;
-        margin-bottom: 1rem;
-      }
-      h2 {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-      }
-      p {
-        line-height: 1.6;
-        margin-bottom: 1em;
-      }
-
-      /* 团队卡片容器 */
-      .team-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: flex-start;
-      }
-
-      .team-card {
-        display: flex;
-        width: 100%; /* 宽度随父容器变化 */
-        max-width: none; /* 取消最大宽度限制 */
-        background-color: rgba(248, 248, 248, 0.5); /* 70% 不透明 */
-        border-radius: 0.5rem;
-        padding: 1rem;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        gap: 1rem;
-        min-height: 180px;
-      }
-
-      /* 头像区域 */
-      .team-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
-
-      /* 成员信息 */
-      .team-info {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      .team-info h3 {
-        margin: 0 0 0.5rem 0;
-      }
-      .team-info p {
-        margin: 0.2rem 0;
-      }
-      .team-info ul {
-        padding-left: 1.2rem;
-        margin: 0.2rem 0;
-      }
-    </style>
-  </head>
-
-  <body>
-    <Header />
+  <div class="about-container">
     <!-- 网站初衷 -->
-    <section class="fade-in" style="animation-delay: 0.2s;">
-      <h2>{heart_title}</h2>
-      <p>开发这个网站的目的主要有三个方面：</p>
-      <p>
-        <strong>第一，个人层面。</strong> 找工作需要一个能写进简历的个人博客项目
-        :D，所以就想着边学前端框架，边动手搭建一个网站，结果一不小心就把它“养”大了。
-      </p>
-      <p>
-        <strong>第二，分享层面。</strong> 上大学时找学习资料特别麻烦，尤其我是中外合办项目的学生，资源搜索起来更困难。社交媒体上的攻略看似很多，但多数夹带广告，不太靠谱。于是我干脆自己做个开源网站，把经验和资源整理出来，既能分享心得，也能帮学弟学妹们少走弯路。
-      </p>
-      <p>
-        <strong>第三，团队层面。</strong> 以前主要是带队参加竞赛，但真正做团队开发项目的经历不多。所以这次就想着拉上同学一起开发网站，大家互相帮衬一下（boy
-        help boy），不仅能积累经验，还能在简历上多添一笔。
-      </p>
+    <section class="content-card fade-in">
+      <h2 class="section-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        开发网站的初衷
+      </h2>
+      <div class="content-text">
+        <p>开发这个网站的目的主要有三个方面：</p>
+        <div class="purpose-card">
+          <div class="purpose-icon">1</div>
+          <div>
+            <h3>个人层面</h3>
+            <p>找工作需要一个能写进简历的个人博客项目 :D，所以就想着边学前端框架，边动手搭建一个网站，结果一不小心就把它"养"大了。</p>
+          </div>
+        </div>
+        <div class="purpose-card">
+          <div class="purpose-icon">2</div>
+          <div>
+            <h3>分享层面</h3>
+            <p>上大学时找学习资料特别麻烦，尤其我是中外合办项目的学生，资源搜索起来更困难。社交媒体上的攻略看似很多，但多数夹带广告，不太靠谱。于是我干脆自己做个开源网站，把经验和资源整理出来，既能分享心得，也能帮学弟学妹们少走弯路。</p>
+          </div>
+        </div>
+        <div class="purpose-card">
+          <div class="purpose-icon">3</div>
+          <div>
+            <h3>团队层面</h3>
+            <p>以前主要是带队参加竞赛，但真正做团队开发项目的经历不多。所以这次就想着拉上同学一起开发网站，大家互相帮衬一下（boy help boy），不仅能积累经验，还能在简历上多添一笔。</p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- 网站内容 -->
-    <section class="fade-in" style="animation-delay: 0.4s;">
-      <h2>{section_title}</h2>
-      <div class="mb-6">
-        <h3 class="text-xl font-medium mb-2">主要内容</h3>
-        <ul class="list-disc list-inside space-y-1">
-          <li>关于计算机相关课程</li>
-          <li>关于华师阿伯丁相关课程介绍</li>
-          <li>保研和留学的经验介绍</li>
-          <li>学业发展方向上的经验分项</li>
-        </ul>
+    <section class="content-card fade-in" style="animation-delay: 0.2s;">
+      <h2 class="section-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        网站内容
+      </h2>
+      <div class="content-grid">
+        <div class="info-box">
+          <h3>主要内容</h3>
+          <ul>
+            <li>关于计算机相关课程</li>
+            <li>关于华师阿伯丁相关课程介绍</li>
+            <li>保研和留学的经验介绍</li>
+            <li>学业发展方向上的经验分享</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h3>课程资源</h3>
+          <ul>
+            <li>
+              <a href="https://pan.baidu.com/s/17ZECe-ywNJ6xNLvdcHxJLg" target="_blank" class="resource-link">
+                计算机课程资源
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+              <span class="code">提取码: <strong>8888</strong></span>
+            </li>
+          </ul>
+        </div>
       </div>
+    </section>
 
-      <div class="mb-6">
-        <h3 class="text-xl font-medium mb-2">课程资源</h3>
-        <ul class="list-disc list-inside space-y-1">
-          <li>
-            计算机课程相关资源：
-            <a
-              href="https://pan.baidu.com/s/17ZECe-ywNJ6xNLvdcHxJLg"
-              target="_blank"
-              class="text-blue-600 hover:underline">计算机课程资源</a
-            >
-            提取码: <strong>8888</strong>
-          </li>
-        </ul>
-      </div>
-
-      <h2 class="fade-in" style="animation-delay: 0.6s;">{pageTitle}</h2>
-
-      <div class="team-container">
-        {
-          team.map((member, index) => (
-            <div
-              class="team-card fade-in"
-              style={`animation-delay: ${0.8 + index * 0.2}s;`}
-            >
+    <!-- 团队成员 -->
+    <section class="content-card fade-in" style="animation-delay: 0.4s;">
+      <h2 class="section-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        团队成员
+      </h2>
+      <div class="team-grid">
+        {team.map((member, index) => (
+          <div class="team-card" style={`animation-delay: ${0.6 + index * 0.2}s;`}>
+            <div class="team-header">
               <img class="team-avatar" src={member.avatar} alt={member.name} />
-              <div class="team-info">
+              <div class="team-intro">
                 <h3>{member.name}</h3>
-                <p>国家: {member.country}</p>
-                <p>职业: {member.occupation}</p>
-                <p>学校: {member.school}</p>
-                <p>爱好: {member.hobbies.join("，")}</p>
-                <p>技能:</p>
-                <ul>
+                <p class="team-desc">{member.description}</p>
+                <div class="team-meta">
+                  <span>🌍 {member.country}</span>
+                  <span>👨‍🎓 {member.occupation}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="team-details">
+              <div class="detail-section">
+                <h4>🏫 学校</h4>
+                <p>{member.school}</p>
+              </div>
+
+              <div class="detail-section">
+                <h4>🎮 爱好</h4>
+                <div class="tags">
+                  {member.hobbies.map((hobby) => (
+                    <span class="tag">{hobby}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <h4>💻 技能</h4>
+                <ul class="skills-list">
                   {member.skills.map((skill) => (
                     <li>{skill}</li>
                   ))}
                 </ul>
-                {member.description && (
-                  <p>
-                    <strong>简介:</strong> {member.description}
-                  </p>
-                )}
-                {member.awards && member.awards.length > 0 && (
-                  <div>
-                    <strong>获奖经历:</strong>
-                    <ul>
-                      {member.awards.map((award) => (
-                        <li>{award}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {member.contributions && (
-                  <p>
-                    <strong>主要贡献:</strong> {member.contributions}
-                  </p>
-                )}
               </div>
-            </div>
-          ))
-        }
-      </div>
 
-      <Sakura client:only="preact" count={30} />
-      <Footer />
+              {member.awards && member.awards.length > 0 && (
+                <div class="detail-section">
+                  <h4>🏆 获奖经历</h4>
+                  <ul class="awards-list">
+                    {member.awards.map((award) => (
+                      <li>{award}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {member.contributions && (
+                <div class="detail-section">
+                  <h4>✨ 主要贡献</h4>
+                  <p class="contribution">{member.contributions}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
-  </body>
-</html>
+  </div>
+
+  <Sakura client:only="preact" count={30} />
+</BaseLayout>
+
+<style>
+  .about-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  .content-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in {
+    transform: translateY(20px);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 28px;
+    font-weight: 800;
+    color: #2d3748;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+  }
+
+  .section-title svg {
+    color: #667eea;
+  }
+
+  .content-text p {
+    line-height: 1.8;
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+  }
+
+  .purpose-card {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .purpose-card:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: translateX(8px);
+  }
+
+  .purpose-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  .purpose-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #2d3748;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .purpose-card p {
+    margin: 0;
+    color: #4a5568;
+    line-height: 1.6;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .info-box {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+  }
+
+  .info-box h3 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .info-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .info-box li {
+    padding: 0.5rem 0;
+    color: #4a5568;
+    line-height: 1.6;
+  }
+
+  .info-box li::before {
+    content: "→";
+    color: #667eea;
+    font-weight: bold;
+    margin-right: 0.5rem;
+  }
+
+  .resource-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .resource-link:hover {
+    color: #764ba2;
+    gap: 10px;
+  }
+
+  .code {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 14px;
+    color: #718096;
+  }
+
+  .team-grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .team-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+  }
+
+  .team-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+  }
+
+  .team-header {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+  }
+
+  .team-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .team-intro h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: #2d3748;
+  }
+
+  .team-desc {
+    margin: 0 0 0.75rem 0;
+    color: #667eea;
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .team-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 14px;
+    color: #718096;
+  }
+
+  .team-details {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .detail-section h4 {
+    margin: 0 0 0.75rem 0;
+    color: #2d3748;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .detail-section p {
+    margin: 0;
+    color: #4a5568;
+    line-height: 1.6;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    padding: 0.4rem 0.8rem;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .tag:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .skills-list,
+  .awards-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .skills-list li,
+  .awards-list li {
+    padding: 0.5rem 0;
+    color: #4a5568;
+    line-height: 1.6;
+  }
+
+  .skills-list li::before {
+    content: "✓";
+    color: #48bb78;
+    font-weight: bold;
+    margin-right: 0.5rem;
+  }
+
+  .awards-list li::before {
+    content: "🏆";
+    margin-right: 0.5rem;
+  }
+
+  .contribution {
+    padding: 1rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-left: 4px solid #667eea;
+    border-radius: 8px;
+    font-style: italic;
+  }
+
+  /* 夜间模式 */
+  html.dark .content-card,
+  html.dark .team-card,
+  html.dark .info-box {
+    background: rgba(30, 30, 30, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  html.dark .section-title,
+  html.dark .team-intro h3,
+  html.dark .detail-section h4,
+  html.dark .purpose-card h3 {
+    color: #e2e8f0;
+  }
+
+  html.dark .content-text p,
+  html.dark .purpose-card p,
+  html.dark .detail-section p,
+  html.dark .info-box li,
+  html.dark .skills-list li,
+  html.dark .awards-list li {
+    color: #a0aec0;
+  }
+
+  html.dark .purpose-card {
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  html.dark .purpose-card:hover {
+    background: rgba(102, 126, 234, 0.15);
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .content-card {
+      padding: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 22px;
+    }
+
+    .team-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .purpose-card {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .purpose-icon {
+      margin: 0 auto;
+    }
+  }
+</style>

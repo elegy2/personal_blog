@@ -9,10 +9,14 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 20, y: 20 });
+  const [isVisible, setIsVisible] = useState(true);
+  const [scale, setScale] = useState(0.12); // 默认缩放 - 调小一些
+  const [position, setPosition] = useState({
+    x: window.innerWidth - 280,
+    y: window.innerHeight - 480
+  });
   const dragOffset = useRef({ x: 0, y: 0 });
 
-  // 使用全局单例来存储Live2D实例
   const globalState = useRef(null);
 
   const models = [
@@ -32,7 +36,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
 
   // 拖拽逻辑
   const handleMouseDown = (e) => {
-    if (e.target.closest('.model-menu')) return;
+    if (e.target.closest('.model-controls') || e.target.closest('.model-menu')) return;
     setIsDragging(true);
     const rect = containerRef.current.getBoundingClientRect();
     dragOffset.current = {
@@ -43,8 +47,8 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    const newX = e.clientX - dragOffset.current.x;
-    const newY = e.clientY - dragOffset.current.y;
+    const newX = Math.max(0, Math.min(e.clientX - dragOffset.current.x, window.innerWidth - 280));
+    const newY = Math.max(0, Math.min(e.clientY - dragOffset.current.y, window.innerHeight - 480));
     setPosition({ x: newX, y: newY });
   };
 
@@ -63,6 +67,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
     }
   }, [isDragging]);
 
+  // 初始化Live2D
   useEffect(() => {
     let destroyed = false;
     let app = null;
@@ -70,22 +75,24 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
 
     async function initApp() {
       try {
-        // 检查全局实例
         if (window.__live2d_instance) {
           globalState.current = window.__live2d_instance;
           app = globalState.current.app;
           model = globalState.current.model;
 
-          // 复用现有canvas
-          if (canvasRef.current && app.view !== canvasRef.current) {
+          if (canvasRef.current && app.view.parentNode !== canvasRef.current) {
             canvasRef.current.appendChild(app.view);
+          }
+
+          // 应用当前缩放
+          if (model) {
+            model.scale.set(scale);
           }
 
           setLoading(false);
           return;
         }
 
-        // 初始化新实例
         if (!window.Live2DCubismCore) {
           await new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -106,8 +113,8 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
           view: canvasRef.current,
           autoStart: true,
           backgroundAlpha: 0,
-          width: 300,
-          height: 400,
+          width: 280,
+          height: 480,
           antialias: true,
         });
 
@@ -119,11 +126,10 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
           return;
         }
 
-        model.scale.set(0.1);
-        model.position.set(150, 350);
-        model.anchor.set(0.5, 0.5);
+        model.scale.set(scale);
+        model.position.set(140, 450);
+        model.anchor.set(0.5, 1);
 
-        // 添加鼠标跟踪
         model.on('hit', (hitAreas) => {
           if (hitAreas.includes('Body')) {
             model.motion('Tap');
@@ -132,7 +138,6 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
 
         app.stage.addChild(model);
 
-        // 保存到全局
         window.__live2d_instance = { app, model, currentModel };
         globalState.current = window.__live2d_instance;
 
@@ -143,13 +148,21 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
       }
     }
 
-    initApp();
+    if (isVisible) {
+      initApp();
+    }
 
     return () => {
       destroyed = true;
-      // 不销毁全局实例，保持持久化
     };
-  }, []);
+  }, [isVisible]);
+
+  // 更新缩放
+  useEffect(() => {
+    if (globalState.current?.model) {
+      globalState.current.model.scale.set(scale);
+    }
+  }, [scale]);
 
   // 切换模型
   const changeModel = async (index) => {
@@ -169,9 +182,9 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
         app.stage.removeChild(oldModel);
         oldModel.destroy();
 
-        newModel.scale.set(0.1);
-        newModel.position.set(150, 350);
-        newModel.anchor.set(0.5, 0.5);
+        newModel.scale.set(scale);
+        newModel.position.set(140, 450);
+        newModel.anchor.set(0.5, 1);
 
         app.stage.addChild(newModel);
 
@@ -187,70 +200,128 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
     }
   };
 
+  if (!isVisible) {
+    return (
+      <button
+        className="show-live2d-btn"
+        onClick={() => setIsVisible(true)}
+        title="显示看板娘"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    );
+  }
+
   return (
-    <div
-      ref={containerRef}
-      className={`live2d-container ${isDragging ? 'dragging' : ''}`}
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`
-      }}
-      onMouseDown={handleMouseDown}
-    >
-      <canvas ref={canvasRef} />
+    <>
+      <div
+        ref={containerRef}
+        className={`live2d-container ${isDragging ? 'dragging' : ''}`}
+        style={{
+          left: `${position.x}px`,
+          top: `${position.y}px`
+        }}
+        onMouseDown={handleMouseDown}
+      >
+        <canvas ref={canvasRef} />
 
-      {loading && (
-        <div className="loading">
-          <div className="spinner"></div>
+        {loading && (
+          <div className="loading">
+            <div className="spinner"></div>
+          </div>
+        )}
+
+        <div className="model-controls">
+          {/* 缩放控制 */}
+          <div className="control-group">
+            <button
+              className="control-btn"
+              onClick={() => setScale(Math.min(0.2, scale + 0.02))}
+              title="放大"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="M21 21l-4.35-4.35"></path>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </button>
+            <button
+              className="control-btn"
+              onClick={() => setScale(Math.max(0.06, scale - 0.02))}
+              title="缩小"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="M21 21l-4.35-4.35"></path>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </button>
+          </div>
+
+          {/* 菜单和关闭 */}
+          <div className="control-group">
+            <button
+              className="control-btn"
+              onClick={() => setShowMenu(!showMenu)}
+              title="切换模型"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="19" cy="12" r="1"></circle>
+                <circle cx="5" cy="12" r="1"></circle>
+              </svg>
+            </button>
+            <button
+              className="control-btn close-btn"
+              onClick={() => setIsVisible(false)}
+              title="关闭看板娘"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
-      )}
 
-      <div className="controls">
-        <button
-          className="menu-toggle"
-          onClick={() => setShowMenu(!showMenu)}
-          title="切换模型"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="1"></circle>
-            <circle cx="19" cy="12" r="1"></circle>
-            <circle cx="5" cy="12" r="1"></circle>
-          </svg>
-        </button>
+        {showMenu && (
+          <div className="model-menu">
+            <div className="menu-header">
+              <span>选择看板娘</span>
+              <button className="close-menu" onClick={() => setShowMenu(false)}>✕</button>
+            </div>
+            <div className="model-grid">
+              {models.map((m, idx) => (
+                <button
+                  key={idx}
+                  className={`model-btn ${idx === currentModel ? 'active' : ''}`}
+                  onClick={() => {
+                    changeModel(idx);
+                    setShowMenu(false);
+                  }}
+                >
+                  <span className="model-number">{m.icon}</span>
+                  <span className="model-name">{m.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-
-      {showMenu && (
-        <div className="model-menu">
-          <div className="menu-header">
-            <span>选择看板娘</span>
-            <button className="close-menu" onClick={() => setShowMenu(false)}>✕</button>
-          </div>
-          <div className="model-grid">
-            {models.map((m, idx) => (
-              <button
-                key={idx}
-                className={`model-btn ${idx === currentModel ? 'active' : ''}`}
-                onClick={() => {
-                  changeModel(idx);
-                  setShowMenu(false);
-                }}
-              >
-                <span className="model-number">{m.icon}</span>
-                <span className="model-name">{m.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <style jsx>{`
         .live2d-container {
           position: fixed;
-          width: 300px;
-          height: 400px;
+          width: 280px;
+          height: 480px;
           z-index: 100;
           cursor: move;
           transition: opacity 0.3s ease;
+          user-select: none;
         }
 
         .live2d-container.dragging {
@@ -267,6 +338,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
+          pointer-events: none;
         }
 
         .spinner {
@@ -282,35 +354,87 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
           to { transform: rotate(360deg); }
         }
 
-        .controls {
+        .model-controls {
           position: absolute;
           bottom: 10px;
           right: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          cursor: default;
         }
 
-        .menu-toggle {
-          width: 40px;
-          height: 40px;
+        .control-group {
+          display: flex;
+          gap: 6px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          padding: 4px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .control-btn {
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           border: none;
-          background: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(10px);
+          background: transparent;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          transition: all 0.3s ease;
+          transition: all 0.2s ease;
+          color: #4a5568;
         }
 
-        .menu-toggle:hover {
+        .control-btn:hover {
+          background: rgba(102, 126, 234, 0.1);
+          color: #667eea;
+        }
+
+        .control-btn.close-btn:hover {
+          background: rgba(245, 101, 101, 0.1);
+          color: #f56565;
+        }
+
+        .show-live2d-btn {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          border: none;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+          transition: all 0.3s ease;
+          z-index: 100;
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        .show-live2d-btn:hover {
           transform: scale(1.1);
-          background: white;
+          box-shadow: 0 12px 32px rgba(102, 126, 234, 0.6);
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+          }
+          50% {
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.8);
+          }
         }
 
         .model-menu {
           position: absolute;
-          bottom: 60px;
+          bottom: 120px;
           right: 10px;
           background: white;
           border-radius: 16px;
@@ -318,6 +442,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
           min-width: 240px;
           animation: slideUp 0.3s ease;
+          cursor: default;
         }
 
         @keyframes slideUp {
@@ -343,6 +468,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
         .menu-header span {
           font-weight: 600;
           color: #2d3748;
+          font-size: 14px;
         }
 
         .close-menu {
@@ -396,7 +522,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
         }
 
         .model-number {
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 700;
         }
 
@@ -413,15 +539,22 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
         @media (max-width: 768px) {
           .live2d-container {
             width: 200px;
-            height: 300px;
+            height: 360px;
           }
 
           .model-menu {
             right: auto;
             left: 10px;
           }
+
+          .show-live2d-btn {
+            width: 48px;
+            height: 48px;
+            bottom: 16px;
+            right: 16px;
+          }
         }
       `}</style>
-    </div>
+    </>
   );
 }

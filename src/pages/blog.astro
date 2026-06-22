@@ -20,11 +20,6 @@ const latestPosts = allPosts.slice(0, 5);
 <BaseLayout pageTitle={pageTitle}>
   <Live2DPersistent client:only="preact" />
 
-  <section class="blog-hero">
-    <h2 class="hero-title">技术文章</h2>
-    <p class="hero-subtitle">探索技术深度，分享实战经验</p>
-  </section>
-
   <section class="blog-container">
     <!-- 左边：文章列表 -->
     <div class="left-panel">
@@ -103,30 +98,6 @@ const latestPosts = allPosts.slice(0, 5);
 </BaseLayout>
 
 <style>
-  .blog-hero {
-    text-align: center;
-    padding: 3rem 1rem;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-    border-radius: 24px;
-    margin: 2rem 0;
-  }
-
-  .hero-title {
-    margin: 0 0 0.5rem 0;
-    font-size: 2.5rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hero-subtitle {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #718096;
-  }
-
   .blog-container {
     display: grid;
     grid-template-columns: 1fr 320px;

@@ -244,6 +244,23 @@ const getTagColor = (tag) => {
     color: #718096;
   }
 
+  /* 夜间模式标签 - 增强对比度 */
+  html.dark .tag {
+    font-weight: 700;
+  }
+
+  html.dark .tag-blue { background: rgba(66, 153, 225, 0.3); color: #90cdf4; }
+  html.dark .tag-green { background: rgba(72, 187, 120, 0.3); color: #9ae6b4; }
+  html.dark .tag-purple { background: rgba(159, 122, 234, 0.3); color: #d6bcfa; }
+  html.dark .tag-orange { background: rgba(237, 137, 54, 0.3); color: #fbd38d; }
+  html.dark .tag-red { background: rgba(245, 101, 101, 0.3); color: #fc8181; }
+  html.dark .tag-cyan { background: rgba(56, 178, 172, 0.3); color: #81e6d9; }
+  html.dark .tag-pink { background: rgba(237, 100, 166, 0.3); color: #fbb6ce; }
+  html.dark .tag-yellow { background: rgba(236, 201, 75, 0.3); color: #faf089; }
+  html.dark .tag-indigo { background: rgba(102, 126, 234, 0.3); color: #c3dafe; }
+  html.dark .tag-teal { background: rgba(56, 178, 172, 0.3); color: #81e6d9; }
+  html.dark .tag-gray { background: rgba(160, 174, 192, 0.3); color: #cbd5e0; }
+
   /* 响应式 */
   @media (max-width: 768px) {
     .card-link {
