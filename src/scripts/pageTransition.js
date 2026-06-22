@@ -29,7 +29,12 @@ export function initPageTransitions() {
   });
 
   // 页面加载后的进入动画
+  // 若当前页面存在欢迎页（splash screen），则跳过滑入动画，
+  // 避免欢迎页动画与 PPT 滑入动画叠加导致显示错乱
   window.addEventListener('load', () => {
+    const hasSplash = document.getElementById('splashScreen');
+    if (hasSplash) return;
+
     document.body.classList.add('page-enter');
     setTimeout(() => {
       document.body.classList.remove('page-enter');
