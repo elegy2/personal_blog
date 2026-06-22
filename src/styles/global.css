@@ -295,3 +295,63 @@ html.dark .team-info li {
   opacity: 0;
   animation: fadeInUp 0.8s ease forwards;
 }
+/* 页面切换翻书动画 */
+.page-transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  pointer-events: none;
+  perspective: 2000px;
+}
+
+.page-left,
+.page-right {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.page-left {
+  left: 0;
+  transform-origin: right center;
+  background: linear-gradient(to right, #f7fafc 0%, #ffffff 100%);
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.page-right {
+  right: 0;
+  transform-origin: left center;
+  background: linear-gradient(to left, #f7fafc 0%, #ffffff 100%);
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.page-transition-overlay.active .page-left {
+  transform: rotateY(-180deg);
+  pointer-events: auto;
+}
+
+.page-transition-overlay.active .page-right {
+  transform: rotateY(180deg);
+  pointer-events: auto;
+}
+
+.page-transition-overlay.page-enter .page-left {
+  transform: rotateY(-180deg);
+}
+
+.page-transition-overlay.page-enter .page-right {
+  transform: rotateY(180deg);
+}
+
+html.dark .page-left {
+  background: linear-gradient(to right, #1a202c 0%, #2d3748 100%);
+}
+
+html.dark .page-right {
+  background: linear-gradient(to left, #1a202c 0%, #2d3748 100%);
+}

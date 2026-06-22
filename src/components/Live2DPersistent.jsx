@@ -5,16 +5,33 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 export default function Live2DPersistent({ selectedModel = 0 }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
-  const [currentModel, setCurrentModel] = useState(selectedModel);
+
+  // 从localStorage读取状态
+  const getSavedState = () => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const saved = localStorage.getItem('live2d_state');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const savedState = getSavedState();
+
+  const [currentModel, setCurrentModel] = useState(savedState?.currentModel ?? selectedModel);
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [scale, setScale] = useState(0.12); // 默认缩放 - 调小一些
-  const [position, setPosition] = useState({
-    x: window.innerWidth - 280,
-    y: window.innerHeight - 480
-  });
+  const [isVisible, setIsVisible] = useState(savedState?.isVisible ?? true);
+  const [scale, setScale] = useState(savedState?.scale ?? 0.08); // 改小初始值
+  const [showControls, setShowControls] = useState(false);
+  const [position, setPosition] = useState(
+    savedState?.position ?? {
+      x: typeof window !== 'undefined' ? window.innerWidth - 280 : 0,
+      y: typeof window !== 'undefined' ? window.innerHeight - 480 : 0
+    }
+  );
   const dragOffset = useRef({ x: 0, y: 0 });
 
   const globalState = useRef(null);
@@ -29,6 +46,26 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
     { path: '/models/简/简.model3.json', icon: '7', name: '简' },
     { path: '/models/知更鸟/知更鸟.model3.json', icon: '8', name: '知更鸟' }
   ];
+
+  // 保存状态到localStorage
+  const saveState = () => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('live2d_state', JSON.stringify({
+        currentModel,
+        isVisible,
+        scale,
+        position
+      }));
+    } catch (e) {
+      console.error('Failed to save Live2D state:', e);
+    }
+  };
+
+  // 状态改变时保存
+  useEffect(() => {
+    saveState();
+  }, [currentModel, isVisible, scale, position]);
 
   useEffect(() => {
     setCurrentModel(selectedModel);
@@ -84,7 +121,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
             canvasRef.current.appendChild(app.view);
           }
 
-          // 应用当前缩放
+          // 应用保存的缩放
           if (model) {
             model.scale.set(scale);
           }
@@ -127,7 +164,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
         }
 
         model.scale.set(scale);
-        model.position.set(140, 450);
+        model.position.set(140, 460);
         model.anchor.set(0.5, 1);
 
         model.on('hit', (hitAreas) => {
@@ -183,7 +220,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
         oldModel.destroy();
 
         newModel.scale.set(scale);
-        newModel.position.set(140, 450);
+        newModel.position.set(140, 460);
         newModel.anchor.set(0.5, 1);
 
         app.stage.addChild(newModel);
@@ -207,7 +244,7 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
         onClick={() => setIsVisible(true)}
         title="显示看板娘"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <circle cx="12" cy="12" r="3"></circle>
         </svg>
@@ -225,6 +262,8 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
           top: `${position.y}px`
         }}
         onMouseDown={handleMouseDown}
+        onMouseEnter={() => setShowControls(true)}
+        onMouseLeave={() => setShowControls(false)}
       >
         <canvas ref={canvasRef} />
 
@@ -234,59 +273,61 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
           </div>
         )}
 
-        <div className="model-controls">
-          {/* 缩放控制 */}
-          <div className="control-group">
-            <button
-              className="control-btn"
-              onClick={() => setScale(Math.min(0.2, scale + 0.02))}
-              title="放大"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="M21 21l-4.35-4.35"></path>
-                <line x1="11" y1="8" x2="11" y2="14"></line>
-                <line x1="8" y1="11" x2="14" y2="11"></line>
-              </svg>
-            </button>
-            <button
-              className="control-btn"
-              onClick={() => setScale(Math.max(0.06, scale - 0.02))}
-              title="缩小"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="M21 21l-4.35-4.35"></path>
-                <line x1="8" y1="11" x2="14" y2="11"></line>
-              </svg>
-            </button>
-          </div>
+        {showControls && (
+          <div className="model-controls">
+            {/* 缩放控制 */}
+            <div className="control-group">
+              <button
+                className="control-btn"
+                onClick={() => setScale(Math.min(0.2, scale + 0.01))}
+                title="放大"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="M21 21l-4.35-4.35"></path>
+                  <line x1="11" y1="8" x2="11" y2="14"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+              </button>
+              <button
+                className="control-btn"
+                onClick={() => setScale(Math.max(0.04, scale - 0.01))}
+                title="缩小"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="M21 21l-4.35-4.35"></path>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+              </button>
+            </div>
 
-          {/* 菜单和关闭 */}
-          <div className="control-group">
-            <button
-              className="control-btn"
-              onClick={() => setShowMenu(!showMenu)}
-              title="切换模型"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="1"></circle>
-                <circle cx="19" cy="12" r="1"></circle>
-                <circle cx="5" cy="12" r="1"></circle>
-              </svg>
-            </button>
-            <button
-              className="control-btn close-btn"
-              onClick={() => setIsVisible(false)}
-              title="关闭看板娘"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
+            {/* 菜单和关闭 */}
+            <div className="control-group">
+              <button
+                className="control-btn"
+                onClick={() => setShowMenu(!showMenu)}
+                title="切换模型"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="19" cy="12" r="1"></circle>
+                  <circle cx="5" cy="12" r="1"></circle>
+                </svg>
+              </button>
+              <button
+                className="control-btn close-btn"
+                onClick={() => setIsVisible(false)}
+                title="关闭看板娘"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {showMenu && (
           <div className="model-menu">
@@ -362,6 +403,18 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
           flex-direction: column;
           gap: 8px;
           cursor: default;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .control-group {
@@ -538,20 +591,11 @@ export default function Live2DPersistent({ selectedModel = 0 }) {
 
         @media (max-width: 768px) {
           .live2d-container {
-            width: 200px;
-            height: 360px;
-          }
-
-          .model-menu {
-            right: auto;
-            left: 10px;
+            display: none;
           }
 
           .show-live2d-btn {
-            width: 48px;
-            height: 48px;
-            bottom: 16px;
-            right: 16px;
+            display: none;
           }
         }
       `}</style>
