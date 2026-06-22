@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import TarotGallery from "../components/TarotGallery.jsx";
-import Live2DHighQuality from "../components/Live2DHighQuality.jsx";
+import CharacterShowcase from "../components/CharacterShowcase.jsx";
 
 const pageTitle = "角色展示";
 ---
@@ -19,60 +18,11 @@ const pageTitle = "角色展示";
         </svg>
         角色卡片展示
       </h1>
-      <p class="subtitle">点击卡片选择角色，查看高清Live2D展示</p>
+      <p class="subtitle">点击左侧卡片切换角色，拖动 / 滚轮缩放查看细节</p>
     </section>
 
-    <div class="content-wrapper">
-      <!-- 左侧：塔罗牌画廊 -->
-      <section class="gallery-section">
-        <TarotGallery client:load onSelect={(index) => {
-          const event = new CustomEvent('selectModel', { detail: index });
-          window.dispatchEvent(event);
-        }} />
-      </section>
-
-      <!-- 右侧：高清Live2D展示 -->
-      <section class="live2d-section">
-        <div class="live2d-wrapper" id="live2dWrapper">
-          <Live2DHighQuality client:load modelIndex={0} />
-        </div>
-      </section>
-    </div>
+    <CharacterShowcase client:only="preact" />
   </div>
-
-  <script>
-    // 监听卡片选择事件
-    let currentComponent = null;
-
-    window.addEventListener('selectModel', async (e) => {
-      const modelIndex = e.detail;
-      const wrapper = document.getElementById('live2dWrapper');
-
-      if (wrapper) {
-        // 淡出效果
-        wrapper.style.opacity = '0';
-        wrapper.style.transform = 'scale(0.95)';
-
-        setTimeout(async () => {
-          // 清空容器
-          wrapper.innerHTML = '';
-
-          // 动态导入组件
-          const { default: Live2DHighQuality } = await import('../components/Live2DHighQuality.jsx');
-          const { h, render } = await import('preact');
-
-          // 渲染新组件
-          render(h(Live2DHighQuality, { modelIndex }), wrapper);
-
-          // 淡入效果
-          setTimeout(() => {
-            wrapper.style.opacity = '1';
-            wrapper.style.transform = 'scale(1)';
-          }, 50);
-        }, 300);
-      }
-    });
-  </script>
 </BaseLayout>
 
 <style>
@@ -95,7 +45,6 @@ const pageTitle = "角色展示";
     font-size: 36px;
     font-weight: 800;
     margin: 0 0 1rem 0;
-    color: #2d3748;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -104,9 +53,8 @@ const pageTitle = "角色展示";
 
   .title svg {
     flex-shrink: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: content-box;
-    stroke: url(#gradient);
+    color: #667eea;
+    -webkit-text-fill-color: #667eea;
   }
 
   .subtitle {
@@ -115,58 +63,8 @@ const pageTitle = "角色展示";
     margin: 0;
   }
 
-  .content-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 640px;
-    gap: 3rem;
-    align-items: start;
-  }
-
-  .gallery-section {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    border-radius: 24px;
-    padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  }
-
-  .live2d-section {
-    position: sticky;
-    top: 2rem;
-  }
-
-  .live2d-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.3s ease;
-  }
-
-  /* 夜间模式 */
-  html.dark .show-container {
-    color: #e2e8f0;
-  }
-
-  html.dark .gallery-section {
-    background: rgba(30, 30, 30, 0.7);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
   html.dark .subtitle {
     color: #a0aec0;
-  }
-
-  /* 响应式 */
-  @media (max-width: 1200px) {
-    .content-wrapper {
-      grid-template-columns: 1fr;
-    }
-
-    .live2d-section {
-      position: static;
-      order: -1;
-    }
   }
 
   @media (max-width: 768px) {
@@ -186,19 +84,6 @@ const pageTitle = "角色展示";
 
     .subtitle {
       font-size: 16px;
-    }
-
-    .gallery-section {
-      padding: 1.5rem;
-    }
-
-    /* 移动端只显示Live2D，隐藏卡片 */
-    .gallery-section {
-      display: none;
-    }
-
-    .live2d-section {
-      display: block;
     }
   }
 </style>
