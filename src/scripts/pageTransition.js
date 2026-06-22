@@ -1,12 +1,8 @@
 // src/scripts/pageTransition.js
 export function initPageTransitions() {
-  // 创建翻页动画容器
+  // 创建滑动动画容器
   const transitionOverlay = document.createElement('div');
-  transitionOverlay.className = 'page-transition-overlay';
-  transitionOverlay.innerHTML = `
-    <div class="page-left"></div>
-    <div class="page-right"></div>
-  `;
+  transitionOverlay.className = 'page-transition-slide';
   document.body.appendChild(transitionOverlay);
 
   // 拦截所有链接点击
@@ -21,22 +17,23 @@ export function initPageTransitions() {
 
       e.preventDefault();
 
-      // 触发翻页动画
-      transitionOverlay.classList.add('active');
+      // 触发滑出动画
+      document.body.classList.add('page-transitioning');
+      transitionOverlay.classList.add('slide-out');
 
       // 等待动画完成后跳转
       setTimeout(() => {
         window.location.href = link.href;
-      }, 600);
+      }, 400);
     }
   });
 
   // 页面加载后的进入动画
   window.addEventListener('load', () => {
-    transitionOverlay.classList.add('page-enter');
+    document.body.classList.add('page-enter');
     setTimeout(() => {
-      transitionOverlay.classList.remove('page-enter');
-    }, 800);
+      document.body.classList.remove('page-enter');
+    }, 500);
   });
 }
 
