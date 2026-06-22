@@ -26,6 +26,7 @@ import Hamburger from "./Hamburger.astro";
     display: flex;
     align-items: center;
     justify-content: space-between; /* 左右分布 */
+    flex-wrap: wrap;
     padding: 0.5rem 1.5rem;
   }
 
@@ -35,44 +36,9 @@ import Hamburger from "./Hamburger.astro";
     gap: 1rem;
   }
 
-  /* 调整 Navigation 右对齐 */
-  .nav-links {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .nav-links a {
-    position: relative;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #444;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-  }
-
-  /* hover 时背景 + 箭头 */
-  .nav-links a:hover {
-    background: rgba(92, 124, 250, 0.12); /* 浅蓝透明背景 */
-    color: #5c7cfa;
-  }
-
-  .nav-links a::after {
-    content: "➤"; /* 箭头符号 */
-    position: absolute;
-    right: -1.2rem;
-    opacity: 0;
-    color: #5c7cfa;
-    font-size: 0.85rem;
-    transition:
-      opacity 0.3s ease,
-      transform 0.3s ease;
-    transform: translateX(-5px);
-  }
-
-  .nav-links a:hover::after {
-    opacity: 1;
-    transform: translateX(0);
+  @media screen and (max-width: 768px) {
+    .nav-bar {
+      padding: 0.5rem 1rem;
+    }
   }
 </style>

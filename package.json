@@ -18,6 +18,7 @@
     "preact": "^10.27.1"
   },
   "devDependencies": {
-    "astro": "^5.14.1"
+    "astro": "^5.14.1",
+    "netlify-cli": "^26.1.0"
   }
 }

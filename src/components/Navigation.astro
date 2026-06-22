@@ -13,8 +13,8 @@
   .nav-links {
     display: flex;
     justify-content: flex-end; /* 靠右 */
-    gap: 2rem;
-    padding: 1rem 2rem; /* 右边留点内边距 */
+    gap: 1.5rem;
+    padding: 0.5rem 1rem;
   }
 
   .nav-links a {
@@ -26,6 +26,7 @@
     padding: 0.5rem 0.75rem;
     border-radius: 6px;
     transition: all 0.3s ease;
+    white-space: nowrap;
   }
 
   /* hover 文字颜色 + 背景 */
@@ -58,22 +59,54 @@
     color: #ffffff;
   }
 
-  /* 箭头标识 */
-  .nav-links a::before {
-    content: "➤";
-    position: absolute;
-    right: -1.2rem;
-    opacity: 0;
-    color: #5c7cfa;
-    font-size: 0.85rem;
-    transition:
-      opacity 0.3s ease,
-      transform 0.3s ease;
-    transform: translateX(-5px);
+  /* ===== 移动端：默认隐藏，点击汉堡展开为下拉菜单 ===== */
+  @media screen and (max-width: 768px) {
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0.25rem;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      animation: navDrop 0.25s ease;
+    }
+
+    .nav-links.expanded {
+      display: flex;
+    }
+
+    .nav-links a {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 1.05rem;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+    }
+
+    /* 移动端去掉下划线动画，改用整块高亮 */
+    .nav-links a::after {
+      display: none;
+    }
+
+    html.dark .nav-links {
+      background: rgba(20, 18, 50, 0.95);
+    }
   }
 
-  .nav-links a:hover::before {
-    opacity: 1;
-    transform: translateX(0);
+  @keyframes navDrop {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>

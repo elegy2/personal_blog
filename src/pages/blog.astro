@@ -287,6 +287,8 @@ const latestPosts = allPosts.slice(0, 5);
   @media (max-width: 968px) {
     .blog-container {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin: 1rem 0;
     }
 
     .right-panel {
@@ -298,7 +300,7 @@ const latestPosts = allPosts.slice(0, 5);
     }
 
     .stats-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
     }
   }
 
@@ -313,6 +315,14 @@ const latestPosts = allPosts.slice(0, 5);
 
     .hero-subtitle {
       font-size: 1rem;
+    }
+
+    .post-list {
+      gap: 1rem;
+    }
+
+    .sidebar-card {
+      padding: 16px;
     }
   }
 </style>
