@@ -1,217 +1,347 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BlogPost from "../components/BlogPost.astro";
-import Live2D from '../components/Live2D.jsx';
+import Live2DPersistent from '../components/Live2DPersistent.jsx';
+
 const allPosts = Object.values(
   import.meta.glob("./posts/*.md", { eager: true }),
-);
-const pageTitle = "Ars Scientia";
+).sort((a, b) => {
+  const dateA = new Date(a.frontmatter.pubDate);
+  const dateB = new Date(b.frontmatter.pubDate);
+  return dateB - dateA; // 最新的在前
+});
+
+const pageTitle = "技术博客";
 
 // 最新 5 篇
 const latestPosts = allPosts.slice(0, 5);
-// 日期格式化函数：yyyy-mm-dd -> yyyy年m月d日
-function formatDate(dateStr: string) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  const year = d.getFullYear();
-  const month = d.getMonth() + 1; // 月份从 0 开始
-  const day = d.getDate();
-  return `${year}年${month}月${day}日`;
-}
 ---
 
 <BaseLayout pageTitle={pageTitle}>
-  <Live2D client:only="preact" />
+  <Live2DPersistent client:only="preact" />
+
+  <section class="blog-hero">
+    <h2 class="hero-title">技术文章</h2>
+    <p class="hero-subtitle">探索技术深度，分享实战经验</p>
+  </section>
+
   <section class="blog-container">
-    <!-- 左边：文章卡片列表 -->
+    <!-- 左边：文章列表 -->
     <div class="left-panel">
-      {
-        allPosts.map((post) => (
-          <div class="post-card">
-            {post.frontmatter.cover ? (
-              <img src={post.frontmatter.cover} alt="cover" class="cover" />
-            ) : null}
-
-            <div class="info">
-              <a href={post.url} class="title">
-                {post.frontmatter.title}
-              </a>
-
-              {/* 格式化显示发布时间 */}
-              {post.frontmatter.pubDate ? (
-                <p class="date">{formatDate(post.frontmatter.pubDate)}</p>
-              ) : null}
-
-              {post.frontmatter.description ? (
-                <p class="desc">{post.frontmatter.description}</p>
-              ) : null}
-            </div>
-          </div>
-        ))
-      }
+      <ul class="post-list">
+        {allPosts.map((post) => (
+          <BlogPost
+            title={post.frontmatter.title}
+            url={post.url}
+            description={post.frontmatter.description}
+            pubDate={post.frontmatter.pubDate}
+            tags={post.frontmatter.tags}
+          />
+        ))}
+      </ul>
     </div>
 
-    <!-- 右边：最新文章 -->
-    <div class="right-panel">
-      <div class="latest-card">
-        <h2>最新文章</h2>
-        <ul>
-          {
-            latestPosts.map((post) => (
-              <li>
-                <a href={post.url}>{post.frontmatter.title}</a>
-                {post.frontmatter.pubDate ? (
-                  <span class="date">
-                    ({formatDate(post.frontmatter.pubDate)})
-                  </span>
-                ) : null}
-              </li>
-            ))
-          }
+    <!-- 右边：侧边栏 -->
+    <aside class="right-panel">
+      <!-- 最新文章 -->
+      <div class="sidebar-card latest-card">
+        <h3 class="sidebar-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+          最新文章
+        </h3>
+        <ul class="latest-list">
+          {latestPosts.map((post, index) => (
+            <li class="latest-item">
+              <span class="item-number">{String(index + 1).padStart(2, '0')}</span>
+              <a href={post.url}>{post.frontmatter.title}</a>
+            </li>
+          ))}
         </ul>
       </div>
-    </div>
+
+      <!-- 标签云 -->
+      <div class="sidebar-card tags-card">
+        <h3 class="sidebar-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+          </svg>
+          热门标签
+        </h3>
+        <div class="tags-cloud">
+          {Array.from(new Set(allPosts.flatMap(p => p.frontmatter.tags || []))).map(tag => (
+            <a href={`/tags/${tag}`} class="tag-item">{tag}</a>
+          ))}
+        </div>
+      </div>
+
+      <!-- 统计信息 -->
+      <div class="sidebar-card stats-card">
+        <h3 class="sidebar-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          博客统计
+        </h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">{allPosts.length}</div>
+            <div class="stat-label">文章总数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{Array.from(new Set(allPosts.flatMap(p => p.frontmatter.tags || []))).length}</div>
+            <div class="stat-label">标签数量</div>
+          </div>
+        </div>
+      </div>
+    </aside>
   </section>
 </BaseLayout>
 
 <style>
+  .blog-hero {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 24px;
+    margin: 2rem 0;
+  }
+
+  .hero-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #718096;
+  }
+
   .blog-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 320px;
     gap: 2rem;
-    margin-top: 2rem;
+    margin: 2rem 0;
   }
 
-  /* 左边文章区：单列布局，每篇文章占据整行 */
   .left-panel {
-    flex: 2; /* 占据父容器的两倍空间（右边是1） */
-    display: grid; /* 使用网格布局 */
-    grid-template-columns: 1fr; /* 单列，每篇文章独占一行 */
-    gap: 1.5rem; /* 卡片之间的上下间距 */
+    min-width: 0; /* 防止flex子元素溢出 */
   }
 
-  /* 单篇文章卡片 */
-  .post-card {
-    display: flex;
-    flex-direction: column;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 12px;
-    padding: 1rem;
-    backdrop-filter: blur(6px);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-  .post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  .cover {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 0.8rem;
-  }
-  .info .title {
-    font-weight: bold;
-    font-size: 1.05rem;
-    color: #222;
-    text-decoration: none;
-  }
-  .info .title:hover {
-    text-decoration: underline;
-  }
-  .info .date {
-    font-size: 0.85rem;
-    color: #777;
-    margin-top: 0.2rem;
-  }
-  .info .desc {
-    font-size: 0.9rem;
-    color: #444;
-    margin-top: 0.4rem;
-  }
-
-  /* 右边最新文章容器 */
-  .right-panel {
-    flex: 1; /* 占据剩余空间的 1 份 */
-  }
-
-  /* 最新文章卡片整体样式 */
-  .latest-card {
-    position: relative;
-    background: rgba(255, 255, 255, 0.7); /* 半透明遮罩效果 */
-    border-radius: 12px; /* 圆角 */
-    padding: 1.5rem;
-    backdrop-filter: blur(6px); /* 背景模糊 */
-    overflow: hidden; /* 隐藏超出部分，保证展开收起时干净 */
-    transition:
-      transform 0.3s ease,
-      box-shadow 0.3s ease; /* 悬浮动画 */
-    cursor: pointer;
-  }
-
-  /* 卡片悬浮时的动态效果：微微浮起 + 阴影 */
-  .latest-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  }
-
-  /* 标题始终可见 */
-  .latest-card h2 {
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-    position: relative;
-    z-index: 2; /* 确保在展开内容之上 */
-  }
-
-  /* 文章列表：默认隐藏（透明 + 高度 0 + 下移） */
-  .latest-card ul {
+  .post-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    opacity: 0;
-    max-height: 0;
-    transform: translateY(10px); /* 初始下移，给人“浮上来”的感觉 */
-    transition:
-      opacity 0.4s ease,
-      max-height 0.4s ease,
-      transform 0.4s ease;
-    overflow: hidden; /* 防止高度动画时内容外溢 */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
 
-  /* 悬浮时展开文章列表（淡入 + 滑出） */
-  .latest-card:hover ul {
-    opacity: 1;
-    max-height: 500px; /* 设定一个足够大的高度，保证容纳列表 */
-    transform: translateY(0); /* 回到正常位置 */
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
 
-  /* 单个文章条目样式 */
-  .latest-card li {
-    margin-bottom: 0.8rem;
-    transition: transform 0.3s ease; /* 悬浮时右移的过渡 */
+  .sidebar-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-  /* 悬浮在具体文章条目时，轻微右移 */
-  .latest-card li:hover {
-    transform: translateX(6px);
+  .sidebar-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
 
-  /* 链接文字样式 */
-  .latest-card a {
-    color: #333;
+  .sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d3748;
+  }
+
+  .sidebar-title svg {
+    color: #667eea;
+  }
+
+  .latest-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .latest-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+  }
+
+  .latest-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .latest-item:hover {
+    transform: translateX(4px);
+  }
+
+  .item-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .latest-item a {
+    flex: 1;
+    color: #2d3748;
     text-decoration: none;
-    font-weight: 500;
-  }
-  .latest-card a:hover {
-    text-decoration: underline;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: color 0.2s ease;
   }
 
-  /* 日期样式 */
-  .latest-card .date {
-    font-size: 0.8rem;
-    color: #777;
-    margin-left: 0.4rem;
+  .latest-item a:hover {
+    color: #667eea;
+  }
+
+  .tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag-item {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .tag-item:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+  }
+
+  .stat-item:hover {
+    transform: scale(1.05);
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: #718096;
+    font-weight: 600;
+  }
+
+  /* 夜间模式 */
+  html.dark .sidebar-card {
+    background: rgba(30, 30, 30, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  html.dark .sidebar-title,
+  html.dark .latest-item a {
+    color: #e2e8f0;
+  }
+
+  html.dark .latest-item a:hover {
+    color: #9f7aea;
+  }
+
+  html.dark .hero-subtitle,
+  html.dark .stat-label {
+    color: #a0aec0;
+  }
+
+  /* 响应式 */
+  @media (max-width: 968px) {
+    .blog-container {
+      grid-template-columns: 1fr;
+    }
+
+    .right-panel {
+      order: -1; /* 移动端侧边栏显示在上方 */
+    }
+
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .blog-hero {
+      padding: 2rem 1rem;
+    }
+
+    .hero-title {
+      font-size: 1.75rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+    }
   }
 </style>

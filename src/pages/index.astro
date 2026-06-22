@@ -3,7 +3,7 @@ import "../styles/global.css";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Greeting from "../components/Greeting";
 import Sakura from "../components/Sakura.jsx";
-import Live2D from "../components/Live2D.jsx";
+import Live2DPersistent from "../components/Live2DPersistent.jsx";
 
 const allPosts = import.meta.glob("../pages/posts/*.md", { eager: true });
 const posts = Object.values(allPosts)
@@ -29,7 +29,7 @@ const tags = [
 ---
 
 <BaseLayout pageTitle={pageTitle}>
-  <Live2D client:only="preact" />
+  <Live2DPersistent client:only="preact" />
 
   <!-- 欢迎页面 -->
   <div class="splash-screen" id="splashScreen">

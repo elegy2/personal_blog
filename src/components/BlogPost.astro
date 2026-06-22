@@ -1,5 +1,266 @@
 ---
-const { title, url } = Astro.props;
+const { title, url, description, pubDate, tags } = Astro.props;
+
+// 格式化日期
+const formatDate = (date) => {
+  if (!date) return '';
+  const d = new Date(date);
+  return d.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+};
+
+// 根据标签生成颜色
+const getTagColor = (tag) => {
+  const colors = {
+    '前端开发': 'blue',
+    '后端开发': 'green',
+    '架构设计': 'purple',
+    '性能优化': 'orange',
+    'DevOps': 'red',
+    '工具': 'cyan',
+    '技术': 'pink',
+    '生活': 'yellow',
+    '学习': 'indigo',
+    '保研': 'teal'
+  };
+  return colors[tag] || 'gray';
+};
 ---
 
-<li><a href={url}>{title}</a></li>
+<article class="blog-card">
+  <a href={url} class="card-link">
+    <div class="card-content">
+      <div class="card-header">
+        <h3 class="card-title">{title}</h3>
+        {pubDate && (
+          <time class="card-date" datetime={pubDate}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            {formatDate(pubDate)}
+          </time>
+        )}
+      </div>
+
+      {description && (
+        <p class="card-description">{description}</p>
+      )}
+
+      {tags && tags.length > 0 && (
+        <div class="card-tags">
+          {tags.map((tag) => (
+            <span class={`tag tag-${getTagColor(tag)}`}>{tag}</span>
+          ))}
+        </div>
+      )}
+
+      <div class="card-footer">
+        <span class="read-more">
+          阅读全文
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </span>
+      </div>
+    </div>
+    <div class="card-shine"></div>
+  </a>
+</article>
+
+<style>
+  .blog-card {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card-link {
+    display: block;
+    position: relative;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-link:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    border-color: rgba(102, 126, 234, 0.5);
+  }
+
+  .card-shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+  }
+
+  .card-link:hover .card-shine {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a202c;
+    line-height: 1.4;
+    flex: 1;
+    transition: color 0.3s ease;
+  }
+
+  .card-link:hover .card-title {
+    color: #667eea;
+  }
+
+  .card-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #718096;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .card-description {
+    margin: 0 0 16px 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #4a5568;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+  }
+
+  .tag-blue { background: rgba(66, 153, 225, 0.15); color: #2c5282; }
+  .tag-green { background: rgba(72, 187, 120, 0.15); color: #22543d; }
+  .tag-purple { background: rgba(159, 122, 234, 0.15); color: #553c9a; }
+  .tag-orange { background: rgba(237, 137, 54, 0.15); color: #7c2d12; }
+  .tag-red { background: rgba(245, 101, 101, 0.15); color: #742a2a; }
+  .tag-cyan { background: rgba(56, 178, 172, 0.15); color: #234e52; }
+  .tag-pink { background: rgba(237, 100, 166, 0.15); color: #702459; }
+  .tag-yellow { background: rgba(236, 201, 75, 0.15); color: #744210; }
+  .tag-indigo { background: rgba(102, 126, 234, 0.15); color: #3c366b; }
+  .tag-teal { background: rgba(56, 178, 172, 0.15); color: #234e52; }
+  .tag-gray { background: rgba(160, 174, 192, 0.15); color: #2d3748; }
+
+  .card-link:hover .tag {
+    transform: translateY(-2px);
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #667eea;
+    transition: gap 0.3s ease;
+  }
+
+  .card-link:hover .read-more {
+    gap: 10px;
+  }
+
+  .read-more svg {
+    transition: transform 0.3s ease;
+  }
+
+  .card-link:hover .read-more svg {
+    transform: translateX(4px);
+  }
+
+  /* 夜间模式 */
+  html.dark .card-link {
+    background: rgba(30, 30, 30, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  html.dark .card-title {
+    color: #e2e8f0;
+  }
+
+  html.dark .card-link:hover .card-title {
+    color: #9f7aea;
+  }
+
+  html.dark .card-description {
+    color: #a0aec0;
+  }
+
+  html.dark .card-date {
+    color: #718096;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .card-link {
+      padding: 20px;
+    }
+
+    .card-header {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 18px;
+    }
+
+    .card-description {
+      font-size: 14px;
+    }
+  }
+</style>
